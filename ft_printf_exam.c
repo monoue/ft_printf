@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.c                                        :+:      :+:    :+:   */
+/*   ft_printf_exam.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/24 15:10:06 by monoue            #+#    #+#             */
-/*   Updated: 2020/07/24 15:44:39 by monoue           ###   ########.fr       */
+/*   Updated: 2020/07/24 17:33:15 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,10 +136,13 @@ char	*ft_get_format(char *format)
 	int	index;
 
 	index = 1;
+
 	// % 後は、まず . or 数字 はスキップし続ける。
-	while (format[index] == '.' || ft_isdigit(format[index]))
+	// while (format[index] == '.' || ft_isdigit(format[index]))
+
+	while (format[index] && !ft_isconversion_specifier(format[index]))
 		index++;
-	// 次に、conversion である場合も、１回だけ index 進める。
+	// conversion である場合、１回だけ index 進める。
 	if (ft_isconversion_specifier(format[index]))
 		index++;
 	// 最後、% から conversion_c までを返す
@@ -243,12 +246,10 @@ void	*ft_get_value(char conversion_c, va_list *arg_list)
 	return (NULL);
 }
 
-int		ft_putstr_return_len(char *str)
+void	ft_putstr(char *str)
 {
-	if (!str)
-		return (0);
-	write(1, str, ft_strlen(str));
-	return (ft_strlen(str));
+	if (str)
+		write(1, str, ft_strlen(str));
 }
 
 t_format_info	*ft_gen_format_info(char *format_str, va_list *arg_list)
@@ -320,21 +321,23 @@ void	free_format_info(t_format_info *format_info)
 
 int	ft_format(t_format_info *format_info)
 {
-	int	len;
+	int		len;
 	char	*new_str;
 
 	new_str = ft_strdup(format_info->value);
 	new_str = ft_apply_precision(new_str, format_info->precision, format_info->conversion_c);
 	new_str = ft_apply_minwidth(new_str, format_info->min_width);
-	len = ft_putstr_return_len(new_str);
+	ft_putstr(new_str);
+	len = ft_strlen(new_str);
 	free(new_str);
+	new_str = NULL;
 	free_format_info(format_info);
 	return (len);
 }
 
 int	ft_printf(const char *format, ...)
 {
-	int	count;
+	int		count;
 	char	*format_str;
 	va_list	arg_list;
 

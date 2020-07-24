@@ -6,15 +6,12 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/24 15:10:06 by monoue            #+#    #+#             */
-/*   Updated: 2020/07/24 15:44:39 by monoue           ###   ########.fr       */
+/*   Updated: 2020/07/24 17:41:32 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdarg.h>
+#include "ft_printf.h"
 
-#define NOT_SPECIFIED -1
 
 typedef	struct	s_format_info
 {
@@ -22,6 +19,7 @@ typedef	struct	s_format_info
 	int		min_width;
 	int		precision;
 	void	*value;
+	int		flag_minus
 }				t_format_info;
 
 int	ft_putchar_return_one(char c)
@@ -47,9 +45,16 @@ int	ft_isdigit(char c)
 	return ('0' <= c && c <= '9');
 }
 
+int	ft_ctoi(char c)
+{
+	if (ft_isdigit(c))
+		return ((int)c - '0');
+	return (-1);
+}
+
 int	ft_isconversion_specifier(char c)
 {
-	return (c == 'c' || c == 's' || c == 'p' || c == 'd' || c == 'x' || );
+	return (c == 'c' || c == 's' || c == 'p' || c == 'd' || c == 'x');
 }
 
 char	*ft_strdup(char *str)
@@ -136,8 +141,7 @@ char	*ft_get_format(char *format)
 	int	index;
 
 	index = 1;
-	// % 後は、まず . or 数字 はスキップし続ける。
-	while (format[index] == '.' || ft_isdigit(format[index]))
+	while (format[index] && !ft_isconversion_specifier(format[index]))
 		index++;
 	// 次に、conversion である場合も、１回だけ index 進める。
 	if (ft_isconversion_specifier(format[index]))
@@ -163,9 +167,9 @@ int	ft_get_min_width(char *format_str)
 	int	min_width;
 	int	index;
 
+	index = 1;
 	if (!ft_isdigit(format_str[index]))
 		return (NOT_SPECIFIED);
-	index = 1;
 	min_width = 0;
 	while (ft_isdigit(format_str[index]))
 	{
@@ -243,12 +247,10 @@ void	*ft_get_value(char conversion_c, va_list *arg_list)
 	return (NULL);
 }
 
-int		ft_putstr_return_len(char *str)
+void	ft_putstr(char *str)
 {
-	if (!str)
-		return (0);
-	write(1, str, ft_strlen(str));
-	return (ft_strlen(str));
+	if (str)
+		write(1, str, ft_strlen(str));
 }
 
 t_format_info	*ft_gen_format_info(char *format_str, va_list *arg_list)
@@ -320,21 +322,23 @@ void	free_format_info(t_format_info *format_info)
 
 int	ft_format(t_format_info *format_info)
 {
-	int	len;
+	int		len;
 	char	*new_str;
 
 	new_str = ft_strdup(format_info->value);
 	new_str = ft_apply_precision(new_str, format_info->precision, format_info->conversion_c);
 	new_str = ft_apply_minwidth(new_str, format_info->min_width);
-	len = ft_putstr_return_len(new_str);
+	ft_putstr(new_str);
+	len = ft_strlen(new_str);
 	free(new_str);
+	new_str = NULL;
 	free_format_info(format_info);
 	return (len);
 }
 
 int	ft_printf(const char *format, ...)
 {
-	int	count;
+	int		count;
 	char	*format_str;
 	va_list	arg_list;
 
@@ -361,7 +365,13 @@ int	ft_printf(const char *format, ...)
 	return (count);
 }
 
+#ifdef TEST
 int main()
 {
-	ft_printf("str: %5.5s\nnum: %d\nhex: %x\n", "abcde", 123, 200);
+	// ft_printf("str: %5.5s\n", "abcde");
+	// ft_printf("num: %d\n", 123);
+	// ft_printf("hex: %x\n", 200);
+	// ft_printf("%yyy", "abc");
+	// printf("%yyy", "abc");
 }
+#endif
