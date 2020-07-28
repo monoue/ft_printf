@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 16:57:30 by monoue            #+#    #+#             */
-/*   Updated: 2020/07/29 07:39:30 by monoue           ###   ########.fr       */
+/*   Updated: 2020/07/29 07:45:18 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,6 +138,16 @@ char	*ft_apply_precision(char conversion_c, int precision, char *new_target)
 	return (new_target);
 }
 
+void	ft_putchar(char c)
+{
+	write(1, &c, 1);
+}
+
+void	ft_putstr(char *str)
+{
+	write(1, str, ft_strlen(str));
+}
+
 int	ft_format(t_format_info *format_info)
 {
 	int	len;
@@ -148,17 +158,14 @@ int	ft_format(t_format_info *format_info)
 	if (format_info->min_width > ft_strlen(new_target))
 		new_target = ft_prepend(new_target, ' ', format_info->min_width - ft_strlen(new_target));
 	len = ft_strlen(new_target);
-	write(1, new_target, len);
+	// write(1, new_target, len);
+	ft_putstr(new_target);
 	free(new_target);
 	free(format_info->value);
 	free(format_info);
 	return (len);
 }
 
-void	ft_putchar(char c)
-{
-	write(1, &c, 1);
-}
 
 void	ft_putchar_increment_both(const char **str, int *count)
 {
