@@ -2,6 +2,8 @@
 #include <stdarg.h>
 #include <unistd.h>
 
+#define CTOI(c) c - '0'
+
 typedef struct	s_fmt_info
 {
 	char	conversion;
@@ -217,7 +219,8 @@ t_fmt_info	*ft_generate_fi(char *target, va_list *arg_list)
 	{
 		if (res == -1)
 			res = 0;
-		res = res * 10 + target[index] - '0';
+		// res = res * 10 + target[index] - '0';
+		res = res * 10 + CTOI(target[index]);
 		index++;
 	}
 	fmt_info->minwidth = res;
@@ -228,7 +231,8 @@ t_fmt_info	*ft_generate_fi(char *target, va_list *arg_list)
 		index++;
 		while (ft_isdigit(target[index]))
 		{
-			res = res * 10 + target[index] - '0';
+			// res = res * 10 + target[index] - '0';
+			res = res * 10 + CTOI(target[index]);
 			index++;
 		}
 	}
@@ -279,6 +283,13 @@ int	ft_format(t_fmt_info *fmt_info)
 	return (res);
 }
 
+void	ft_putchar_count_and_format_increment(const char **str, int *count)
+{
+	write(1, *str, 1);
+	(*count)++;
+	(*str)++;
+}
+
 int	ft_printf(const char *format, ...)
 {
 	int	cnt;
@@ -291,9 +302,10 @@ int	ft_printf(const char *format, ...)
 	{
 		if (*format != '%')
 		{
-			write(1, format, 1);
-			cnt++;
-			format++;
+			ft_putchar_count_and_format_increment(&format, &cnt);
+			// write(1, format, 1);
+			// cnt++;
+			// format++;
 		}
 		else
 		{
@@ -308,9 +320,11 @@ int	ft_printf(const char *format, ...)
 	return (cnt);
 }
 
-#ifdef TEST
+#include <stdio.h>
 int	main(void)
 {
-	ft_printf("%d %s %x", 10, "ABC", 128);
+	int	ret;
+
+	ret = ft_printf("%3.3d %3.3s %3.3x\n", 10, "ABC", 128);
+	printf("%d\n", ret);
 }
-#endif

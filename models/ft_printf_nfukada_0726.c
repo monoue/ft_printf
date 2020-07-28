@@ -6,6 +6,7 @@ typedef struct	s_info
 {
 	int		field;
 	int		prec;
+	int		minus;
 	char	conv;
 }				t_info;
 
@@ -43,6 +44,7 @@ void	init_info(t_info *info)
 {
 	info->field = 0;
 	info->prec = -1;
+	info->minus = 0;
 	info->conv = '\0';
 }
 
@@ -153,7 +155,7 @@ int display_x(unsigned int x, t_info *info)
 		write(1, " ", 1);
 		info->field--;
 		count++;
-	}	
+	}
 	write(1, str, len);
 	free(str);
 	count += len;
@@ -220,7 +222,6 @@ int	parse_info(const char **str, va_list *ap)
 	parse_conv(str, &info);
 	return (display_arg(&info, ap));
 }
-
 
 int	ft_printf(const char *str, ... )
 {

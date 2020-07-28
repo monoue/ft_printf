@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/24 15:10:06 by monoue            #+#    #+#             */
-/*   Updated: 2020/07/24 17:33:15 by monoue           ###   ########.fr       */
+/*   Updated: 2020/07/28 16:21:04 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,13 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#define NOT_SPECIFIED -1
+// #define NOT_SPECIFIED -1
+#define CTOI(c) c - '0'
+
+int	ft_ctoi(char c)
+{
+	return (c - '0');
+}
 
 typedef	struct	s_format_info
 {
@@ -49,7 +55,7 @@ int	ft_isdigit(char c)
 
 int	ft_isconversion_specifier(char c)
 {
-	return (c == 'c' || c == 's' || c == 'p' || c == 'd' || c == 'x' || );
+	return (c == 'c' || c == 's' || c == 'p' || c == 'd' || c == 'x');
 }
 
 char	*ft_strdup(char *str)
@@ -173,6 +179,7 @@ int	ft_get_min_width(char *format_str)
 	while (ft_isdigit(format_str[index]))
 	{
 		min_width = min_width * 10 + ft_ctoi(format_str[index]);
+		// min_width = min_width * 10 + CTOI(format_str[index]);
 		index++;
 	}
 	return (min_width);
@@ -193,6 +200,7 @@ int	ft_get_precision(char *format_str)
 	while (ft_isdigit(format_str[index]))
 	{
 		precision = precision * 10 + ft_ctoi(format_str[index]);
+		// precision = precision * 10 + CTOI(format_str[index]);
 		index++;
 	}
 	return (precision);

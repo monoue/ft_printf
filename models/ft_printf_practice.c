@@ -76,6 +76,10 @@ int	display_s(char *str, t_format_info *format_info)
 		str = "(null)";
 	if (format_info->precision != -1 && len > format_info->precision) //
 		len = format_info->precision;
+	while (format_info->min_width > len)
+	{
+
+	}
 }
 
 int	display_arg(t_format_info *format_info, va_list *args)

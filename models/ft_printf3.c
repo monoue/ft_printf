@@ -45,7 +45,7 @@ void * ft_memset(void *p, int c, int size)
         *tmp = (unsigned char)c;
         tmp++;
     }
-    return(p); 
+    return(p);
 
 }
 
@@ -74,7 +74,7 @@ char *ft_strdup(char *s)
     i = 0;
     res = malloc(sizeof(char) * ft_strlen(s) + 1);
     if (!res)
-         return (NULL);
+        return (NULL);
     while(s[i])
     {
         res[i] = s[i];
@@ -92,7 +92,7 @@ char *ft_strjoin(char *s1, char *s2)
     i = j = 0;
     res = malloc(sizeof(char) * (ft_strlen(s1) +ft_strlen(s2) + 1));
     if (!res)
-         return (NULL);
+        return (NULL);
     while(s1[i])
     {
         res[i] = s1[i];
@@ -115,7 +115,7 @@ char *ft_strjoin_free(char *s1, char *s2)
     i = j = 0;
     res = malloc(sizeof(char) * (ft_strlen(s1) +ft_strlen(s2) + 1));
     if (!res)
-         return (NULL);
+        return (NULL);
     while(s1[i])
     {
         res[i] = s1[i];
@@ -148,7 +148,7 @@ char *ft_itoa_base(int n, int base)
     else if (n < 0)
     {
         res[0] = '-';
-        res[1] = 0; 
+        res[1] = 0;
 
     }
     else if (n == 0)
@@ -228,7 +228,7 @@ void ft_parse(t_printf *p)
     {
         p->width = ft_atoi(p->f);
         while (ft_isdigit(*p->f))
-            p->f++;   
+            p->f++;
     }
     if (*p->f == '.')
     {
@@ -237,7 +237,7 @@ void ft_parse(t_printf *p)
         {
             p->prec = ft_atoi(p->f);
             while (ft_isdigit(*p->f))
-            p->f++;       
+            p->f++;
         }
         else
             p->prec = 0;
@@ -252,7 +252,7 @@ int ft_printf(char *format, ...)
 {
     t_printf p;
     int ret;
-    
+
     ret = 0;
     va_start(p.ap, format);
     p.f = format;
@@ -275,4 +275,3 @@ int ft_printf(char *format, ...)
     va_end(p.ap);
     return (ret);
 }
-
