@@ -74,13 +74,15 @@ int	display_s(char *str, t_format_info *format_info)
 	len	= ft_strlen(str);
 	if (str == NULL)
 		str = "(null)";
-	if (format_info->perc != -1 && len )
+	if (format_info->precision != -1 && len > format_info->precision) //
+		len = format_info->precision;
 }
 
 int	display_arg(t_format_info *format_info, va_list *args)
 {
 	if (format_info->conversion_c == 's')
 		return (display_s(va_arg(*args, char *), format_info));
+		// ここで引数の２番目以降を取ってくる
 	// if (format_info->conversion_c == 'd')
 	// 	return (display_d(va_arg(*args, int), format_info));
 	// if (format_info->conversion_c == 'x')
