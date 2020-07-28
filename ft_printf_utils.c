@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:07:49 by monoue            #+#    #+#             */
-/*   Updated: 2020/07/28 17:20:15 by monoue           ###   ########.fr       */
+/*   Updated: 2020/07/29 07:08:40 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ char	*ft_strjoin(char *s1, char *s2)
 	return (res);
 }
 
-char	*ft_strjoin_free(char *s1, char *s2)
+char	*ft_strjoin_free_both(char *s1, char *s2)
 {
 	char	*res;
 
@@ -124,9 +124,9 @@ char	*ft_ctoa(char c)
 char	*ft_itoa(long num)
 {
 	if (num < 0)
-		return (ft_strjoin_free(ft_ctoa('-'), ft_itoa(-num)));
+		return (ft_strjoin_free_both(ft_ctoa('-'), ft_itoa(-num)));
 	else if (num >= 10)
-		return (ft_strjoin_free(ft_itoa(num / 10), ft_itoa(num % 10)));
+		return (ft_strjoin_free_both(ft_itoa(num / 10), ft_itoa(num % 10)));
 	else
 		return (ft_ctoa((char)(num + '0')));
 }
@@ -134,7 +134,7 @@ char	*ft_itoa(long num)
 char	*ft_xtoa(unsigned int num)
 {
 	if (num >= 16)
-		return (ft_strjoin_free(ft_xtoa(num / 16), ft_xtoa(num % 16)));
+		return (ft_strjoin_free_both(ft_xtoa(num / 16), ft_xtoa(num % 16)));
 	else
 		return (ft_ctoa("0123456789abcdef"[num]));
 }
