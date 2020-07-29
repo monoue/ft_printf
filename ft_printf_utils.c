@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:07:49 by monoue            #+#    #+#             */
-/*   Updated: 2020/07/29 07:08:40 by monoue           ###   ########.fr       */
+/*   Updated: 2020/07/29 10:10:53 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,10 +131,12 @@ char	*ft_itoa(long num)
 		return (ft_ctoa((char)(num + '0')));
 }
 
-char	*ft_xtoa(unsigned int num)
+char	*ft_xtoa(unsigned int num, char conversion_c)
 {
 	if (num >= 16)
-		return (ft_strjoin_free_both(ft_xtoa(num / 16), ft_xtoa(num % 16)));
-	else
+		return (ft_strjoin_free_both(ft_xtoa(num / 16, conversion_c), ft_xtoa(num % 16, conversion_c)));
+	else if (conversion_c == 'x')
 		return (ft_ctoa("0123456789abcdef"[num]));
+	else
+		return (ft_ctoa("0123456789ABCDEF"[num]));
 }

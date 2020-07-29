@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 16:57:30 by monoue            #+#    #+#             */
-/*   Updated: 2020/07/29 07:45:18 by monoue           ###   ########.fr       */
+/*   Updated: 2020/07/29 10:31:34 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	ft_isconversion_c(char c)
 {
-	if (c == 'd' || c == 'x' || c == 's')
+	if (c == 'd' || c == 'x' || c == 'X' || c == 's')
 		return (1);
 	return (0);
 }
@@ -64,8 +64,8 @@ void		*ft_get_value(char conversion_c, va_list *arg_list)
 
 	if (conversion_c == 'd')
 		return (ft_itoa((long)va_arg(*arg_list, int)));
-	else if (conversion_c == 'x')
-		return (ft_xtoa(va_arg(*arg_list, unsigned int)));
+	else if (conversion_c == 'x' || conversion_c == 'X')
+		return (ft_xtoa(va_arg(*arg_list, unsigned int), conversion_c));
 	else if (conversion_c == 's')
 	{
 		tmp = ft_strdup(va_arg(*arg_list, char *));
@@ -131,7 +131,7 @@ char	*ft_apply_precision(char conversion_c, int precision, char *new_target)
 			new_target = ft_prepend(new_target, '0', precision - ft_strlen(new_target));
 		return (new_target);
 	}
-	if (conversion_c == 'x' && ft_strlen(new_target) < precision)
+	if ((conversion_c == 'x' || conversion_c == 'X') && ft_strlen(new_target) < precision)
 		return (ft_prepend(new_target, '0', precision - ft_strlen(new_target)));
 	if (conversion_c == 's' && ft_strlen(new_target) > precision)
 		return (ft_getfirstn(new_target, precision));
@@ -199,10 +199,11 @@ int	ft_printf(const char *format, ...)
 	return (count);
 }
 
-int	main(void)
-{
-	int	ret;
+// int	main(void)
+// {
+// 	int	ret;
 
-	ret = ft_printf("%3.3d %3.3s %3.3x\n", 10, "ABC", 128);
-	printf("%d\n", ret);
-}
+// 	ret = ft_printf("%.3d\n", 2);
+// 	// ret = ft_printf("%3.3d %3.3s %3.3x\n", 10, "ABC", 128);
+// 	printf("%d\n", ret);
+// }
