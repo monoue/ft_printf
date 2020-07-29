@@ -3,7 +3,8 @@
 int main()
 {
 	int	ret;
-	ret = printf("[%-5-2s]\n", "abc");
+	// ret = printf("[%-05d]\n", 123);
+	ret = printf("[%.2s]\n", "abc");
 	// printf("%d\n", ret);
 
 // 	printf("c: %c\n", 'Z');

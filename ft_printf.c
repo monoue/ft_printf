@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 16:57:30 by monoue            #+#    #+#             */
-/*   Updated: 2020/07/29 14:40:20 by monoue           ###   ########.fr       */
+/*   Updated: 2020/07/29 16:15:22 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	ft_isconversion_c(char c)
 {
-	return (c == 'c' || c == 'd' || c == 'x' || c == 'X' || c == 's');
+	return (c == 'c' || c == 'd' || c == 'i' || c == 'x' || c == 'X' || c == 's');
 }
 
 int	ft_isflag(char c)
@@ -33,7 +33,7 @@ char	*ft_getfirstn(char *str, int len)
 	return (res);
 }
 
-char	*ft_prepend(char *str, char c, int len)
+char	*ft_fill_output(char *str, char c, int len)
 {
 	if (len < 0)
 		return (str);
@@ -65,7 +65,7 @@ void		*ft_get_value(char conversion_c, va_list *arg_list)
 {
 	char	*tmp;
 
-	if (conversion_c == 'd')
+	if (conversion_c == 'd' || conversion_c == 'i')
 		return (ft_itoa((long)va_arg(*arg_list, int)));
 	else if (conversion_c == 'x' || conversion_c == 'X')
 		return (ft_xtoa(va_arg(*arg_list, unsigned int), conversion_c));
@@ -143,22 +143,22 @@ char	*ft_apply_precision(char conversion_c, int precision, char *new_target)
 {
 	if (precision == -1)
 		return (new_target);
-	if ((conversion_c == 'd' || conversion_c == 'x') && precision == 0 && new_target[0] == '0')
+	if ((conversion_c == 'd' || conversion_c == 'i' || conversion_c == 'x') && precision == 0 && new_target[0] == '0')
 		return (ft_getfirstn(new_target, 0));
-	if (conversion_c == 'd')
+	if (conversion_c == 'd' || conversion_c == 'i')
 	{
 		if (new_target[0] == '-' && ft_strlen(new_target) <= precision)
 		{
 			new_target[0] = '0';
-			new_target = ft_prepend(new_target, '0', precision - ft_strlen(new_target) + 1);
+			new_target = ft_fill_output(new_target, '0', precision - ft_strlen(new_target) + 1);
 			new_target[0] = '-';
 		}
 		else if (ft_strlen(new_target) < precision)
-			new_target = ft_prepend(new_target, '0', precision - ft_strlen(new_target));
+			new_target = ft_fill_output(new_target, '0', precision - ft_strlen(new_target));
 		return (new_target);
 	}
 	if ((conversion_c == 'x' || conversion_c == 'X') && ft_strlen(new_target) < precision)
-		return (ft_prepend(new_target, '0', precision - ft_strlen(new_target)));
+		return (ft_fill_output(new_target, '0', precision - ft_strlen(new_target)));
 	if ((conversion_c == 'c' || conversion_c == 's') && ft_strlen(new_target) > precision)
 		return (ft_getfirstn(new_target, precision));
 	return (new_target);
@@ -182,7 +182,8 @@ int	ft_format(t_format_info *format_info)
 	new_target = ft_strdup(format_info->value);
 	new_target = ft_apply_precision(format_info->conversion_c, format_info->precision, new_target);
 	if (format_info->min_width > ft_strlen(new_target))
-		new_target = ft_prepend(new_target, ' ', format_info->min_width - ft_strlen(new_target));
+		new_target = ft_fill_output(new_target, ' ', format_info->min_width - ft_strlen(new_target));
+		// new_target = ft_fill_output(new_target, ' ', format_info->min_width - ft_strlen(new_target));
 	len = ft_strlen(new_target);
 	// write(1, new_target, len);
 	ft_putstr(new_target);
@@ -226,11 +227,12 @@ int	ft_printf(const char *format, ...)
 }
 
 
-// int	main(void)
-// {
-// 	int	ret;
+int	main(void)
+{
+	int	ret;
 
-// 	ret = ft_printf("%a\n", 'a');
-// 	// ret = ft_printf("%3.3d %3.3s %3.3x\n", 10, "ABC", 128);
-// 	// printf("%d\n", ret);
-// }
+	ret = ft_printf("%.2s\n", "abc");
+	ret = printf("%.2s\n", "abc");
+	// ret = ft_printf("%3.3d %3.3s %3.3x\n", 10, "ABC", 128);
+	// printf("%d\n", ret);
+}
