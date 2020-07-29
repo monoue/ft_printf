@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 16:57:30 by monoue            #+#    #+#             */
-/*   Updated: 2020/07/29 16:15:22 by monoue           ###   ########.fr       */
+/*   Updated: 2020/07/30 07:15:32 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ char	*ft_get_format(char *format)
 	int	index;
 
 	index = 1;
-	while (ft_isflag(format[index] )|| ft_isdigit(format[index]))
+	while (ft_isflag(format[index])|| ft_isdigit(format[index]))
 		index++;
 	if (ft_isconversion_c(format[index]))
 		index++;
@@ -145,6 +145,7 @@ char	*ft_apply_precision(char conversion_c, int precision, char *new_target)
 		return (new_target);
 	if ((conversion_c == 'd' || conversion_c == 'i' || conversion_c == 'x') && precision == 0 && new_target[0] == '0')
 		return (ft_getfirstn(new_target, 0));
+		// この getfirstn は本来の使い方ではなく流用だと思われる
 	if (conversion_c == 'd' || conversion_c == 'i')
 	{
 		if (new_target[0] == '-' && ft_strlen(new_target) <= precision)
@@ -161,6 +162,7 @@ char	*ft_apply_precision(char conversion_c, int precision, char *new_target)
 		return (ft_fill_output(new_target, '0', precision - ft_strlen(new_target)));
 	if ((conversion_c == 'c' || conversion_c == 's') && ft_strlen(new_target) > precision)
 		return (ft_getfirstn(new_target, precision));
+		// これは、0 始まりの substr_head_free である。なぜこの関数名なのか、もっと調査。
 	return (new_target);
 }
 
@@ -176,16 +178,14 @@ void	ft_putstr(char *str)
 
 int	ft_format(t_format_info *format_info)
 {
-	int	len;
+	int		len;
 	char	*new_target;
 
 	new_target = ft_strdup(format_info->value);
 	new_target = ft_apply_precision(format_info->conversion_c, format_info->precision, new_target);
 	if (format_info->min_width > ft_strlen(new_target))
 		new_target = ft_fill_output(new_target, ' ', format_info->min_width - ft_strlen(new_target));
-		// new_target = ft_fill_output(new_target, ' ', format_info->min_width - ft_strlen(new_target));
 	len = ft_strlen(new_target);
-	// write(1, new_target, len);
 	ft_putstr(new_target);
 	free(new_target);
 	free(format_info->value);
@@ -203,7 +203,7 @@ void	ft_putchar_increment_both(const char **str, int *count)
 
 int	ft_printf(const char *format, ...)
 {
-	int	count;
+	int		count;
 	char	*target;
 	va_list	arg_list;
 
