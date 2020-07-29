@@ -9,7 +9,8 @@
             "command": "gcc",
             "args": [
                 "-g",
-                "${file}",
+				"${file}",
+				"ft_printf_utils.c",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],

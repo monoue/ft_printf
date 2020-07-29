@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:07:49 by monoue            #+#    #+#             */
-/*   Updated: 2020/07/29 10:10:53 by monoue           ###   ########.fr       */
+/*   Updated: 2020/07/29 12:03:33 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,21 @@ char	*ft_strdup(char *str)
 		index++;
 	}
 	res[index] = 0;
+	return (res);
+}
+
+char	*ft_strdup_c(char c)
+{
+	// int	index;
+	char	*res;
+
+	if (!c)
+		return (NULL);
+	res = malloc(2);
+	if (!res)
+		return (NULL);
+	res[0] = c;
+	res[1] = '\0';
 	return (res);
 }
 

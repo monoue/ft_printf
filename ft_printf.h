@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/02 11:56:31 by monoue            #+#    #+#             */
-/*   Updated: 2020/07/29 10:12:12 by monoue           ###   ########.fr       */
+/*   Updated: 2020/07/29 13:11:57 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,10 @@
 
 typedef struct	s_format_info
 {
-	char	conversion_c;
-	int		precision;
 	int		min_width;
+	int		precision;
+	char	conversion_c;
+	int		minus;
 	void	*value;
 }				t_format_info;
 
@@ -39,5 +40,6 @@ char	*ft_substr(char	*str, int start, int len);
 char	*ft_ctoa(char c);
 char	*ft_itoa(long num);
 char	*ft_xtoa(unsigned int num, char conversion_c);
+char	*ft_strdup_c(char c);
 
 #endif

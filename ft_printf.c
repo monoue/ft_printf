@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 16:57:30 by monoue            #+#    #+#             */
-/*   Updated: 2020/07/29 10:31:34 by monoue           ###   ########.fr       */
+/*   Updated: 2020/07/29 14:40:20 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,12 @@
 
 int	ft_isconversion_c(char c)
 {
-	if (c == 'd' || c == 'x' || c == 'X' || c == 's')
-		return (1);
-	return (0);
+	return (c == 'c' || c == 'd' || c == 'x' || c == 'X' || c == 's');
+}
+
+int	ft_isflag(char c)
+{
+	return (c == '-' || c == '0' || c == '.' || c == '*');
 }
 
 char	*ft_getfirstn(char *str, int len)
@@ -44,7 +47,7 @@ char	*ft_get_format(char *format)
 	int	index;
 
 	index = 1;
-	while (format[index] == '.' || ft_isdigit(format[index]))
+	while (ft_isflag(format[index] )|| ft_isdigit(format[index]))
 		index++;
 	if (ft_isconversion_c(format[index]))
 		index++;
@@ -66,6 +69,13 @@ void		*ft_get_value(char conversion_c, va_list *arg_list)
 		return (ft_itoa((long)va_arg(*arg_list, int)));
 	else if (conversion_c == 'x' || conversion_c == 'X')
 		return (ft_xtoa(va_arg(*arg_list, unsigned int), conversion_c));
+	else if (conversion_c == 'c')
+	{
+		tmp = ft_strdup_c(va_arg(*arg_list, unsigned int));
+		if (!tmp)
+			return(NULL);
+		return (tmp);
+	}
 	else if (conversion_c == 's')
 	{
 		tmp = ft_strdup(va_arg(*arg_list, char *));
@@ -74,6 +84,14 @@ void		*ft_get_value(char conversion_c, va_list *arg_list)
 		return (tmp);
 	}
 	return (NULL);
+}
+
+void	init_format_info(t_format_info **format_info)
+{
+	(**format_info).min_width = -1;
+	(**format_info).minus = 0;
+	(**format_info).precision= -1;
+	(**format_info).value = NULL;
 }
 
 t_format_info	*ft_gen_format_info(char *target, va_list *arg_list)
@@ -85,30 +103,38 @@ t_format_info	*ft_gen_format_info(char *target, va_list *arg_list)
 	format_info = malloc(sizeof(t_format_info) * 1);
 	if (!format_info)
 		return (NULL);
+	init_format_info(&format_info);
 	format_info->conversion_c = target[ft_strlen(target) - 1];
 	index = 1;
 	res = -1;
-	while (ft_isdigit(target[index]))
+	while (!ft_isconversion_c(target[index]))
 	{
-		if (res == -1)
-			res = 0;
-		res = res * 10 + CTOI(target[index]);
-		index++;
-	}
-	format_info->min_width = res;
-	res = -1;
-	if (target[index] == '.')
-	{
-		res = 0;
-		index++;
 		while (ft_isdigit(target[index]))
 		{
-			// res = res * 10 + target[index] - '0';
+			if (res == -1)
+				res = 0;
 			res = res * 10 + CTOI(target[index]);
 			index++;
 		}
+		format_info->min_width = res;
+		res = -1;
+		if (target[index] == '-')
+		{
+			format_info->minus = 1;
+			index++;
+		}
+		if (target[index] == '.')
+		{
+			res = 0;
+			index++;
+			while (ft_isdigit(target[index]))
+			{
+				res = res * 10 + CTOI(target[index]);
+				index++;
+			}
+		}
+		format_info->precision = res;
 	}
-	format_info->precision = res;
 	format_info->value = ft_get_value(format_info->conversion_c, arg_list);
 	return (format_info);
 }
@@ -133,7 +159,7 @@ char	*ft_apply_precision(char conversion_c, int precision, char *new_target)
 	}
 	if ((conversion_c == 'x' || conversion_c == 'X') && ft_strlen(new_target) < precision)
 		return (ft_prepend(new_target, '0', precision - ft_strlen(new_target)));
-	if (conversion_c == 's' && ft_strlen(new_target) > precision)
+	if ((conversion_c == 'c' || conversion_c == 's') && ft_strlen(new_target) > precision)
 		return (ft_getfirstn(new_target, precision));
 	return (new_target);
 }
@@ -199,11 +225,12 @@ int	ft_printf(const char *format, ...)
 	return (count);
 }
 
+
 // int	main(void)
 // {
 // 	int	ret;
 
-// 	ret = ft_printf("%.3d\n", 2);
+// 	ret = ft_printf("%a\n", 'a');
 // 	// ret = ft_printf("%3.3d %3.3s %3.3x\n", 10, "ABC", 128);
-// 	printf("%d\n", ret);
+// 	// printf("%d\n", ret);
 // }
