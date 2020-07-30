@@ -1,11 +1,8 @@
-#include <stdio.h>
+#include "ft_printf.h"
 
 int main()
 {
-	int	ret;
-	// ret = printf("[%-05d]\n", 123);
-	ret = printf("[%.2s]\n", "abc");
-	// printf("%d\n", ret);
+	printf("[%8.5d]\n", 34);
 
 // 	printf("c: %c\n", 'Z');
 // 	ft_printf("c: %c\n", 'Z');

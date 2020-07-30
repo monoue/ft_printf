@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:07:49 by monoue            #+#    #+#             */
-/*   Updated: 2020/07/29 12:03:33 by monoue           ###   ########.fr       */
+/*   Updated: 2020/07/30 11:55:16 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,6 @@ char	*ft_strdup(char *str)
 
 char	*ft_strdup_c(char c)
 {
-	// int	index;
 	char	*res;
 
 	if (!c)
@@ -101,29 +100,56 @@ char	*ft_strjoin_free_both(char *s1, char *s2)
 	return (res);
 }
 
-char	*ft_substr(char	*str, int start, int len)
+char	*ft_substr(char *s, int start, int len)
 {
-	int	size;
-	int	index;
-	char	*res;
+	char	*p;
+	// size_t	srclen;
+	int	srclen;
+	// int	minlen;
+	int	minlen;
+	// int	i;
+	int	i;
 
-	if (!str || start < 0 || len < 0)
+	if (s == NULL)
 		return (NULL);
-	if (ft_strlen(str) <= start)
+	srclen = ft_strlen(s);
+	if (start > srclen)
+		return (ft_strdup(""));
+	minlen = MIN(srclen - start, len);
+	p = malloc(sizeof(*p) * (minlen + 1));
+	if (p == NULL)
 		return (NULL);
-	size = (ft_strlen(str) < start + len) ? ft_strlen(str) - start : len;
-	res = malloc(size + 1);
-	if (!res)
-		return (NULL);
-	index = 0;
-	while (str[index + start] && index < len)
-	{
-		res[index] = str[index + start];
-		index++;
-	}
-	res[index] = '\0';
-	return (res);
+	s += start;
+	i = 0;
+	while (minlen-- > 0)
+		p[i++] = *s++;
+	p[i] = '\0';
+	return (p);
 }
+
+// char	*ft_substr(char	*str, int start, int len)
+// {
+// 	int	size;
+// 	int	index;
+// 	char	*res;
+
+// 	if (!str || start < 0 || len < 0)
+// 		return (NULL);
+// 	if (ft_strlen(str) <= start)
+// 		return (NULL);
+// 	size = (ft_strlen(str) < start + len) ? ft_strlen(str) - start : len;
+// 	res = malloc(size + 1);
+// 	if (!res)
+// 		return (NULL);
+// 	index = 0;
+// 	while (str[index + start] && index < len)
+// 	{
+// 		res[index] = str[index + start];
+// 		index++;
+// 	}
+// 	res[index] = '\0';
+// 	return (res);
+// }
 
 char	*ft_ctoa(char c)
 {

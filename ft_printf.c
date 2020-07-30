@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 16:57:30 by monoue            #+#    #+#             */
-/*   Updated: 2020/07/30 07:15:32 by monoue           ###   ########.fr       */
+/*   Updated: 2020/07/30 18:02:46 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,18 @@ int	ft_isflag(char c)
 	return (c == '-' || c == '0' || c == '.' || c == '*');
 }
 
-char	*ft_getfirstn(char *str, int len)
+char	*ft_free_and_return_null_c(char *str)
+{
+	char	*res;
+
+	if (!str)
+		return (NULL);
+	res = ft_substr(str, 0, 0);
+	free(str);
+	return (res);
+}
+
+char	*ft_cut_by_precision(char *str, int len)
 {
 	char	*res;
 
@@ -33,12 +44,84 @@ char	*ft_getfirstn(char *str, int len)
 	return (res);
 }
 
-char	*ft_fill_output(char *str, char c, int len)
+// char	*ft_fill_output(char *str, char c, int len)
+// char	*ft_fill_output(char *str, char c, int len, int minus)
+char	*ft_fill_output(char *str, char c, int len, int minus, int zero)
+{
+	if (len < 0)
+		return (str);
+	// if (zero)
+	if (minus)
+	{
+		while (len--)
+			str = ft_strjoin_free_both(str, ft_ctoa(c));
+			// str = ft_strjoin_free_both(str, ft_ctoa('0'));
+			// str = ft_strjoin_free_both(ft_ctoa(c), str);
+	}
+	// ここいじらなきゃ
+	else if (zero)
+	{
+		while (len--)
+			str = ft_strjoin_free_both(ft_ctoa('0'), str);
+	}
+	else
+	{
+		while (len--)
+			str = ft_strjoin_free_both(ft_ctoa(c), str);
+	}
+	return (str);
+	// else
+	// {
+	// 	// if (zero)
+	// 	if (minus)
+	// 	{
+	// 		while (len--)
+	// 			str = ft_strjoin_free_both(str, ft_ctoa(c));
+	// 	}
+	// 	else
+	// 	{
+	// 		while (len--)
+	// 			str = ft_strjoin_free_both(ft_ctoa(c), str);
+	// 	}
+	// }
+	// return (str);
+}
+
+char	*ft_fill_output_zero(char *str, int len)
 {
 	if (len < 0)
 		return (str);
 	while (len--)
-		str = ft_strjoin_free_both(ft_ctoa(c), str);
+		str = ft_strjoin_free_both(ft_ctoa('0'), str);
+	return (str);
+}
+
+// char	*ft_fill_output_space(char *str, int len, int minus)
+// char	*ft_fill_output_space(char *str, int len, int minus, int zero)
+char	*ft_fill_output_space(char *str, int len, int minus, int zero, int wid_minus_prec)
+{
+	if (len < 0)
+		return (str);
+	if (minus)
+	{
+		while (len--)
+			str = ft_strjoin_free_both(str, ft_ctoa(' '));
+	}
+	else if (wid_minus_prec > 0)
+	{
+		while (len--)
+			str = ft_strjoin_free_both(ft_ctoa('0'), str);
+	}
+	else if (zero)
+	{
+		while (len--)
+			str = ft_strjoin_free_both(ft_ctoa('0'), str);
+	}
+	else
+	{
+		while (len--)
+			str = ft_strjoin_free_both(ft_ctoa(' '), str);
+	}
 	return (str);
 }
 
@@ -90,6 +173,7 @@ void	init_format_info(t_format_info **format_info)
 {
 	(**format_info).min_width = -1;
 	(**format_info).minus = 0;
+	(**format_info).zero = 0;
 	(**format_info).precision= -1;
 	(**format_info).value = NULL;
 }
@@ -109,6 +193,8 @@ t_format_info	*ft_gen_format_info(char *target, va_list *arg_list)
 	res = -1;
 	while (!ft_isconversion_c(target[index]))
 	{
+		if (target[index] == '0')
+			format_info->zero = 1;
 		while (ft_isdigit(target[index]))
 		{
 			if (res == -1)
@@ -117,7 +203,6 @@ t_format_info	*ft_gen_format_info(char *target, va_list *arg_list)
 			index++;
 		}
 		format_info->min_width = res;
-		res = -1;
 		if (target[index] == '-')
 		{
 			format_info->minus = 1;
@@ -132,37 +217,41 @@ t_format_info	*ft_gen_format_info(char *target, va_list *arg_list)
 				res = res * 10 + CTOI(target[index]);
 				index++;
 			}
+			format_info->precision = res;
 		}
-		format_info->precision = res;
 	}
 	format_info->value = ft_get_value(format_info->conversion_c, arg_list);
 	return (format_info);
 }
 
-char	*ft_apply_precision(char conversion_c, int precision, char *new_target)
+// char	*ft_apply_precision(char conversion_c, int precision, char *new_target)
+char	*ft_apply_precision(char conversion_c, int precision, char *new_target, int minus, int zero)
 {
 	if (precision == -1)
 		return (new_target);
 	if ((conversion_c == 'd' || conversion_c == 'i' || conversion_c == 'x') && precision == 0 && new_target[0] == '0')
-		return (ft_getfirstn(new_target, 0));
-		// この getfirstn は本来の使い方ではなく流用だと思われる
+		return (ft_free_and_return_null_c(new_target));
 	if (conversion_c == 'd' || conversion_c == 'i')
 	{
 		if (new_target[0] == '-' && ft_strlen(new_target) <= precision)
 		{
 			new_target[0] = '0';
-			new_target = ft_fill_output(new_target, '0', precision - ft_strlen(new_target) + 1);
+			// new_target = ft_fill_output(new_target, '0', precision - ft_strlen(new_target) + 1);
+			// new_target = ft_fill_output(new_target, '0', precision - ft_strlen(new_target) + 1, minus, zero);
+			new_target = ft_fill_output_zero(new_target, precision - ft_strlen(new_target) + 1);
 			new_target[0] = '-';
 		}
 		else if (ft_strlen(new_target) < precision)
-			new_target = ft_fill_output(new_target, '0', precision - ft_strlen(new_target));
+			new_target = ft_fill_output_zero(new_target, precision - ft_strlen(new_target));
+			// new_target = ft_fill_output_space(new_target, precision - ft_strlen(new_target));
+			// new_target = ft_fill_output(new_target, '0', precision - ft_strlen(new_target));
 		return (new_target);
 	}
 	if ((conversion_c == 'x' || conversion_c == 'X') && ft_strlen(new_target) < precision)
-		return (ft_fill_output(new_target, '0', precision - ft_strlen(new_target)));
+		// return (ft_fill_output(new_target, '0', precision - ft_strlen(new_target)));
+		return (ft_fill_output(new_target, '0', precision - ft_strlen(new_target), minus, zero));
 	if ((conversion_c == 'c' || conversion_c == 's') && ft_strlen(new_target) > precision)
-		return (ft_getfirstn(new_target, precision));
-		// これは、0 始まりの substr_head_free である。なぜこの関数名なのか、もっと調査。
+		return (ft_cut_by_precision(new_target, precision));
 	return (new_target);
 }
 
@@ -182,9 +271,12 @@ int	ft_format(t_format_info *format_info)
 	char	*new_target;
 
 	new_target = ft_strdup(format_info->value);
-	new_target = ft_apply_precision(format_info->conversion_c, format_info->precision, new_target);
+	// new_target = ft_apply_precision(format_info->conversion_c, format_info->precision, new_target);
+	new_target = ft_apply_precision(format_info->conversion_c, format_info->precision, new_target, format_info->minus, format_info->zero);
 	if (format_info->min_width > ft_strlen(new_target))
-		new_target = ft_fill_output(new_target, ' ', format_info->min_width - ft_strlen(new_target));
+		new_target = ft_fill_output_space(new_target, format_info->min_width - ft_strlen(new_target), format_info->minus, format_info->zero, format_info->min_width - format_info->precision);
+		// new_target = ft_fill_output_space(new_target, format_info->min_width - ft_strlen(new_target), format_info->minus, format_info->zero);
+		// new_target = ft_fill_output(new_target, ' ', format_info->min_width - ft_strlen(new_target), format_info->minus, format_info->zero);
 	len = ft_strlen(new_target);
 	ft_putstr(new_target);
 	free(new_target);
@@ -229,10 +321,13 @@ int	ft_printf(const char *format, ...)
 
 int	main(void)
 {
-	int	ret;
-
-	ret = ft_printf("%.2s\n", "abc");
-	ret = printf("%.2s\n", "abc");
-	// ret = ft_printf("%3.3d %3.3s %3.3x\n", 10, "ABC", 128);
-	// printf("%d\n", ret);
+	// int	ret;
+	printf("%08.5d\n", 34);
+	ft_printf("%08.5d\n", 34);
+	// printf("%05d\n", 34);
+	// ft_printf("%05d\n", 34);
+	// printf("%08.5d\n", 34);
+	// ft_printf("%08.5d\n", 34);
+	// printf("%8.5d\n", 34);
+	// ft_printf("%8.5d\n", 34);
 }
