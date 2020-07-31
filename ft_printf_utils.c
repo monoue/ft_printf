@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:07:49 by monoue            #+#    #+#             */
-/*   Updated: 2020/07/31 14:09:01 by monoue           ###   ########.fr       */
+/*   Updated: 2020/07/31 17:26:31 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,15 +158,23 @@ char	*ft_ctoa(unsigned int c)
 {
 	char	*res;
 
-// ここから
-	if (c == 0)
-		return (NULL);
+// ここから入れると１減る
+	// if (c == 0)
+	// 	return (NULL);
 // ここまで
 	res = ft_strdup("0");
 	if (!res)
 		return (NULL);
 	res[0] = c;
 	return (res);
+}
+
+char	*ft_utoa(unsigned int num)
+{
+	if (num >= 10)
+		return (ft_strjoin_free_both(ft_utoa(num / 10), ft_utoa(num % 10)));
+	else
+		return (ft_ctoa((char)(num + '0')));
 }
 
 char	*ft_itoa(long num)
@@ -179,12 +187,18 @@ char	*ft_itoa(long num)
 		return (ft_ctoa((char)(num + '0')));
 }
 
-char	*ft_xtoa(unsigned int num, t_format_info *format_info)
+// char	*ft_ptoa(size_t num, t_format_info *format_info)
+// {
+// 	return(ft_strjoin_free_both(ft_strdup("0x"), ft_xtoa(num, format_info)));
+// }
+
+// char	*ft_xtoa(unsigned int num, t_format_info *format_info)
+char	*ft_xtoa(size_t num, t_format_info *format_info)
 {
 	if (num >= 16)
 		return (ft_strjoin_free_both(ft_xtoa(num / 16, format_info), ft_xtoa(num % 16, format_info)));
-	else if (format_info->conversion_c == 'x')
-		return (ft_ctoa("0123456789abcdef"[num]));
-	else
+	else if (format_info->conversion_c == 'X')
 		return (ft_ctoa("0123456789ABCDEF"[num]));
+	else
+		return (ft_ctoa("0123456789abcdef"[num]));
 }

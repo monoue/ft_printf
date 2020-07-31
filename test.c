@@ -2,7 +2,8 @@
 
 int main()
 {
-	printf("[%u]\n", "a"[0]);
+	// printf("[%u]\n", "a"[0]);
+	printf("*\n", "abc")
 
 // 	printf("c: %c\n", 'Z');
 // 	ft_printf("c: %c\n", 'Z');
