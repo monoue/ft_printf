@@ -2,7 +2,7 @@
 
 int main()
 {
-	printf("[%8.5d]\n", 34);
+	printf("[%u]\n", "a"[0]);
 
 // 	printf("c: %c\n", 'Z');
 // 	ft_printf("c: %c\n", 'Z');

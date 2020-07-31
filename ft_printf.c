@@ -6,11 +6,65 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 16:57:30 by monoue            #+#    #+#             */
-/*   Updated: 2020/07/30 18:02:46 by monoue           ###   ########.fr       */
+/*   Updated: 2020/07/31 14:23:01 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
+
+void	init_format_info(t_format_info **format_info)
+{
+	(**format_info).min_width = -1;
+	(**format_info).minus = 0;
+	(**format_info).zero = 0;
+	(**format_info).precision= -1;
+	(**format_info).value = NULL;
+}
+
+char	*ft_fill_output_space(char *str, int len, t_format_info *format_info)
+{
+	if (len < 0)
+		return (str);
+	// if ((format_info->conversion_c == 'x' || format_info->conversion_c == 'X') && format_info->precision == 0)
+	// if (format_info->conversion_c == 'X' && format_info->precision == 0)
+	// {
+	// 	str[0] = '0';
+	// 	len--;
+	// }
+	if (format_info->minus)
+	{
+		while (len--)
+			str = ft_strjoin_free_both(str, ft_ctoa(' '));
+	}
+	else if (format_info->zero && format_info->precision == -1 && str[0] && str[0] == '-')
+	{
+		str[0] = '0';
+		while (len--)
+			str = ft_strjoin_free_both(ft_ctoa('0'), str);
+		str[0] = '-';
+	}
+	else if (format_info->zero && format_info->precision == -1)
+	{
+		while (len--)
+			str = ft_strjoin_free_both(ft_ctoa('0'), str);
+	}
+	else if (format_info->min_width - format_info->precision > 0)
+	{
+		while (len--)
+			str = ft_strjoin_free_both(ft_ctoa(' '), str);
+	}
+	else if (format_info->zero)
+	{
+		while (len--)
+			str = ft_strjoin_free_both(ft_ctoa('0'), str);
+	}
+	else
+	{
+		while (len--)
+			str = ft_strjoin_free_both(ft_ctoa(' '), str);
+	}
+	return (str);
+}
 
 int	ft_isconversion_c(char c)
 {
@@ -44,22 +98,26 @@ char	*ft_cut_by_precision(char *str, int len)
 	return (res);
 }
 
-// char	*ft_fill_output(char *str, char c, int len)
-// char	*ft_fill_output(char *str, char c, int len, int minus)
-char	*ft_fill_output(char *str, char c, int len, int minus, int zero)
+// char	*ft_fill_output(char *str, char c, int len, int minus, int zero)
+char	*ft_fill_output(char *str, char c, int len, t_format_info *format_info)
 {
 	if (len < 0)
 		return (str);
-	// if (zero)
-	if (minus)
+	if (format_info->minus)
 	{
-		while (len--)
-			str = ft_strjoin_free_both(str, ft_ctoa(c));
-			// str = ft_strjoin_free_both(str, ft_ctoa('0'));
-			// str = ft_strjoin_free_both(ft_ctoa(c), str);
+		if (format_info->precision != -1)
+		{
+			while (len--)
+				str = ft_strjoin_free_both(ft_ctoa(c), str);
+		}
+		else
+		{
+			while (len--)
+				str = ft_strjoin_free_both(str, ft_ctoa(c));
+		}
 	}
 	// ここいじらなきゃ
-	else if (zero)
+	else if (format_info->zero)
 	{
 		while (len--)
 			str = ft_strjoin_free_both(ft_ctoa('0'), str);
@@ -70,21 +128,6 @@ char	*ft_fill_output(char *str, char c, int len, int minus, int zero)
 			str = ft_strjoin_free_both(ft_ctoa(c), str);
 	}
 	return (str);
-	// else
-	// {
-	// 	// if (zero)
-	// 	if (minus)
-	// 	{
-	// 		while (len--)
-	// 			str = ft_strjoin_free_both(str, ft_ctoa(c));
-	// 	}
-	// 	else
-	// 	{
-	// 		while (len--)
-	// 			str = ft_strjoin_free_both(ft_ctoa(c), str);
-	// 	}
-	// }
-	// return (str);
 }
 
 char	*ft_fill_output_zero(char *str, int len)
@@ -93,35 +136,6 @@ char	*ft_fill_output_zero(char *str, int len)
 		return (str);
 	while (len--)
 		str = ft_strjoin_free_both(ft_ctoa('0'), str);
-	return (str);
-}
-
-// char	*ft_fill_output_space(char *str, int len, int minus)
-// char	*ft_fill_output_space(char *str, int len, int minus, int zero)
-char	*ft_fill_output_space(char *str, int len, int minus, int zero, int wid_minus_prec)
-{
-	if (len < 0)
-		return (str);
-	if (minus)
-	{
-		while (len--)
-			str = ft_strjoin_free_both(str, ft_ctoa(' '));
-	}
-	else if (wid_minus_prec > 0)
-	{
-		while (len--)
-			str = ft_strjoin_free_both(ft_ctoa('0'), str);
-	}
-	else if (zero)
-	{
-		while (len--)
-			str = ft_strjoin_free_both(ft_ctoa('0'), str);
-	}
-	else
-	{
-		while (len--)
-			str = ft_strjoin_free_both(ft_ctoa(' '), str);
-	}
 	return (str);
 }
 
@@ -144,22 +158,23 @@ int	ft_isvalid_format(char *target)
 	return (ft_isconversion_c(target[ft_strlen(target) - 1]));
 }
 
-void		*ft_get_value(char conversion_c, va_list *arg_list)
+void		*ft_get_value(t_format_info *format_info, va_list *arg_list)
 {
 	char	*tmp;
 
-	if (conversion_c == 'd' || conversion_c == 'i')
+	if (format_info->conversion_c == 'd' || format_info->conversion_c == 'i')
 		return (ft_itoa((long)va_arg(*arg_list, int)));
-	else if (conversion_c == 'x' || conversion_c == 'X')
-		return (ft_xtoa(va_arg(*arg_list, unsigned int), conversion_c));
-	else if (conversion_c == 'c')
+	else if (format_info->conversion_c == 'x' || format_info->conversion_c == 'X')
+		return (ft_xtoa(va_arg(*arg_list, unsigned int), format_info));
+	else if (format_info->conversion_c == 'c')
 	{
-		tmp = ft_strdup_c(va_arg(*arg_list, unsigned int));
+		// tmp = ft_strdup_c(va_arg(*arg_list, unsigned int));
+		tmp = ft_ctoa(va_arg(*arg_list, unsigned int));
 		if (!tmp)
 			return(NULL);
 		return (tmp);
 	}
-	else if (conversion_c == 's')
+	else if (format_info->conversion_c == 's')
 	{
 		tmp = ft_strdup(va_arg(*arg_list, char *));
 		if (!tmp)
@@ -169,14 +184,6 @@ void		*ft_get_value(char conversion_c, va_list *arg_list)
 	return (NULL);
 }
 
-void	init_format_info(t_format_info **format_info)
-{
-	(**format_info).min_width = -1;
-	(**format_info).minus = 0;
-	(**format_info).zero = 0;
-	(**format_info).precision= -1;
-	(**format_info).value = NULL;
-}
 
 t_format_info	*ft_gen_format_info(char *target, va_list *arg_list)
 {
@@ -220,38 +227,32 @@ t_format_info	*ft_gen_format_info(char *target, va_list *arg_list)
 			format_info->precision = res;
 		}
 	}
-	format_info->value = ft_get_value(format_info->conversion_c, arg_list);
+	format_info->value = ft_get_value(format_info, arg_list);
 	return (format_info);
 }
 
-// char	*ft_apply_precision(char conversion_c, int precision, char *new_target)
-char	*ft_apply_precision(char conversion_c, int precision, char *new_target, int minus, int zero)
+char	*ft_apply_precision(char *new_target, t_format_info *format_info)
 {
-	if (precision == -1)
+	if (format_info->precision == -1)
 		return (new_target);
-	if ((conversion_c == 'd' || conversion_c == 'i' || conversion_c == 'x') && precision == 0 && new_target[0] == '0')
+	if ((format_info->conversion_c == 'd' || format_info->conversion_c == 'i' || format_info->conversion_c == 'x' || format_info->conversion_c == 'X') && format_info->precision == 0 && new_target[0] == '0')
 		return (ft_free_and_return_null_c(new_target));
-	if (conversion_c == 'd' || conversion_c == 'i')
+	if (format_info->conversion_c == 'd' || format_info->conversion_c == 'i')
 	{
-		if (new_target[0] == '-' && ft_strlen(new_target) <= precision)
+		if (new_target[0] == '-' && ft_strlen(new_target) <= format_info->precision)
 		{
 			new_target[0] = '0';
-			// new_target = ft_fill_output(new_target, '0', precision - ft_strlen(new_target) + 1);
-			// new_target = ft_fill_output(new_target, '0', precision - ft_strlen(new_target) + 1, minus, zero);
-			new_target = ft_fill_output_zero(new_target, precision - ft_strlen(new_target) + 1);
+			new_target = ft_fill_output_zero(new_target, format_info->precision - ft_strlen(new_target) + 1);
 			new_target[0] = '-';
 		}
-		else if (ft_strlen(new_target) < precision)
-			new_target = ft_fill_output_zero(new_target, precision - ft_strlen(new_target));
-			// new_target = ft_fill_output_space(new_target, precision - ft_strlen(new_target));
-			// new_target = ft_fill_output(new_target, '0', precision - ft_strlen(new_target));
+		else if (ft_strlen(new_target) < format_info->precision)
+			new_target = ft_fill_output_zero(new_target, format_info->precision - ft_strlen(new_target));
 		return (new_target);
 	}
-	if ((conversion_c == 'x' || conversion_c == 'X') && ft_strlen(new_target) < precision)
-		// return (ft_fill_output(new_target, '0', precision - ft_strlen(new_target)));
-		return (ft_fill_output(new_target, '0', precision - ft_strlen(new_target), minus, zero));
-	if ((conversion_c == 'c' || conversion_c == 's') && ft_strlen(new_target) > precision)
-		return (ft_cut_by_precision(new_target, precision));
+	if ((format_info->conversion_c == 'x' || format_info->conversion_c == 'X') && ft_strlen(new_target) < format_info->precision)
+		return (ft_fill_output(new_target, '0', format_info->precision - ft_strlen(new_target), format_info));
+	if ((format_info->conversion_c == 'c' || format_info->conversion_c == 's') && ft_strlen(new_target) > format_info->precision)
+		return (ft_cut_by_precision(new_target, format_info->precision));
 	return (new_target);
 }
 
@@ -270,17 +271,20 @@ int	ft_format(t_format_info *format_info)
 	int		len;
 	char	*new_target;
 
-	new_target = ft_strdup(format_info->value);
-	// new_target = ft_apply_precision(format_info->conversion_c, format_info->precision, new_target);
-	new_target = ft_apply_precision(format_info->conversion_c, format_info->precision, new_target, format_info->minus, format_info->zero);
+	if (format_info->value)
+		new_target = ft_strdup(format_info->value);
+	else
+		new_target = 0;
+	new_target = ft_apply_precision(new_target, format_info);
 	if (format_info->min_width > ft_strlen(new_target))
-		new_target = ft_fill_output_space(new_target, format_info->min_width - ft_strlen(new_target), format_info->minus, format_info->zero, format_info->min_width - format_info->precision);
-		// new_target = ft_fill_output_space(new_target, format_info->min_width - ft_strlen(new_target), format_info->minus, format_info->zero);
-		// new_target = ft_fill_output(new_target, ' ', format_info->min_width - ft_strlen(new_target), format_info->minus, format_info->zero);
+		new_target = ft_fill_output_space(new_target, format_info->min_width - ft_strlen(new_target), format_info);
 	len = ft_strlen(new_target);
 	ft_putstr(new_target);
+	new_target = NULL;
 	free(new_target);
+	format_info->value = NULL;
 	free(format_info->value);
+	format_info = NULL;
 	free(format_info);
 	return (len);
 }
@@ -321,13 +325,12 @@ int	ft_printf(const char *format, ...)
 
 int	main(void)
 {
-	// int	ret;
-	printf("%08.5d\n", 34);
-	ft_printf("%08.5d\n", 34);
-	// printf("%05d\n", 34);
-	// ft_printf("%05d\n", 34);
-	// printf("%08.5d\n", 34);
-	// ft_printf("%08.5d\n", 34);
-	// printf("%8.5d\n", 34);
-	// ft_printf("%8.5d\n", 34);
+	int	ret;
+
+	printf("[%c]\n", '\0');
+	ft_printf("[%c]\n", '\0');
+	printf("[%5c]\n", '\0');
+	ft_printf("[%5c]\n", '\0');
+	printf("[%-5c]\n", '\0');
+	ft_printf("[%-5c]\n", '\0');
 }

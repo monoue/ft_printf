@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:07:49 by monoue            #+#    #+#             */
-/*   Updated: 2020/07/30 11:55:16 by monoue           ###   ########.fr       */
+/*   Updated: 2020/07/31 14:09:01 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,19 +51,19 @@ char	*ft_strdup(char *str)
 	return (res);
 }
 
-char	*ft_strdup_c(char c)
-{
-	char	*res;
+// char	*ft_strdup_c(char c)
+// {
+// 	char	*res;
 
-	if (!c)
-		return (NULL);
-	res = malloc(2);
-	if (!res)
-		return (NULL);
-	res[0] = c;
-	res[1] = '\0';
-	return (res);
-}
+// 	if (!c)
+// 		return (NULL);
+// 	res = malloc(2);
+// 	if (!res)
+// 		return (NULL);
+// 	res[0] = c;
+// 	res[1] = '\0';
+// 	return (res);
+// }
 
 char	*ft_strjoin(char *s1, char *s2)
 {
@@ -95,7 +95,9 @@ char	*ft_strjoin_free_both(char *s1, char *s2)
 	char	*res;
 
 	res = ft_strjoin(s1, s2);
+	s1 = NULL;
 	free(s1);
+	s2 = NULL;
 	free(s2);
 	return (res);
 }
@@ -151,10 +153,15 @@ char	*ft_substr(char *s, int start, int len)
 // 	return (res);
 // }
 
-char	*ft_ctoa(char c)
+// char	*ft_ctoa(char c)
+char	*ft_ctoa(unsigned int c)
 {
 	char	*res;
 
+// ここから
+	if (c == 0)
+		return (NULL);
+// ここまで
 	res = ft_strdup("0");
 	if (!res)
 		return (NULL);
@@ -172,11 +179,11 @@ char	*ft_itoa(long num)
 		return (ft_ctoa((char)(num + '0')));
 }
 
-char	*ft_xtoa(unsigned int num, char conversion_c)
+char	*ft_xtoa(unsigned int num, t_format_info *format_info)
 {
 	if (num >= 16)
-		return (ft_strjoin_free_both(ft_xtoa(num / 16, conversion_c), ft_xtoa(num % 16, conversion_c)));
-	else if (conversion_c == 'x')
+		return (ft_strjoin_free_both(ft_xtoa(num / 16, format_info), ft_xtoa(num % 16, format_info)));
+	else if (format_info->conversion_c == 'x')
 		return (ft_ctoa("0123456789abcdef"[num]));
 	else
 		return (ft_ctoa("0123456789ABCDEF"[num]));

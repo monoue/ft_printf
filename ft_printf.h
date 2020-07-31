@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/02 11:56:31 by monoue            #+#    #+#             */
-/*   Updated: 2020/07/30 12:10:55 by monoue           ###   ########.fr       */
+/*   Updated: 2020/07/31 13:53:42 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,12 @@ char	*ft_strjoin(char *s1, char *s2);
 char	*ft_strjoin_free_both(char *s1, char *s2);
 char	*ft_substr(char *s, int start, int len);
 // char	*ft_substr(char	*str, int start, int len);
-char	*ft_ctoa(char c);
+// char	*ft_ctoa(char c);
+char	*ft_ctoa(unsigned int c);
 char	*ft_itoa(long num);
-char	*ft_xtoa(unsigned int num, char conversion_c);
-char	*ft_strdup_c(char c);
+char	*ft_xtoa(unsigned int num, t_format_info *format_info);
+// char	*ft_xtoa(unsigned int num, char conversion_c);
+// char	*ft_strdup_c(char c);
 int		ft_printf(const char *format, ...);
 
 #endif
