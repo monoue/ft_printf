@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/02 11:56:31 by monoue            #+#    #+#             */
-/*   Updated: 2020/08/04 10:02:28 by monoue           ###   ########.fr       */
+/*   Updated: 2020/08/04 15:54:56 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,11 @@ char	*ft_strdup(char *str);
 char	*ft_strjoin(char *s1, char *s2);
 char	*ft_strjoin_free_both(char *s1, char *s2);
 char	*ft_substr(char *s, int start, int len);
+int		ft_isflag(char c);
+int		ft_isconversion_c(char c);
+void	ft_putstr(char *str);
+void	ft_putstr_n(char *str, int len);
+void	ft_putchar_increment_both(const char **str, int *count);
 // char	*ft_substr(char	*str, int start, int len);
 // char	*ft_ctoa(char c);
 char	*ft_ctoa(unsigned int c);
