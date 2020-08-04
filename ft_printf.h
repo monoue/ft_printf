@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/02 11:56:31 by monoue            #+#    #+#             */
-/*   Updated: 2020/07/31 17:26:56 by monoue           ###   ########.fr       */
+/*   Updated: 2020/08/04 10:02:28 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 # define MIN(x, y) x <= y ? x : y
 # define CTOI(c) c - '0'
 # define NOT_SPECIFIED -1
+# define SAFE_FREE(ptr) {free(ptr);ptr = NULL;}
 
 typedef struct	s_format_info
 {
@@ -31,6 +32,7 @@ typedef struct	s_format_info
 	int		minus;
 	int		zero;
 	void	*value;
+	int		c_null;
 }				t_format_info;
 
 int	ft_strlen(char *str);

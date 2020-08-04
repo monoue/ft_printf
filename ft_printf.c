@@ -6,11 +6,24 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 16:57:30 by monoue            #+#    #+#             */
-/*   Updated: 2020/07/31 20:50:45 by monoue           ###   ########.fr       */
+/*   Updated: 2020/08/04 13:24:21 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
+
+int		ft_strncmp(const char *s1, const char *s2, size_t n)
+{
+	while (n > 0 && *s1 == *s2 && *s1 && *s2)
+	{
+		s1++;
+		s2++;
+		n--;
+	}
+	if (n == 0)
+		return (0);
+	return ((int)((unsigned char)*s1 - (unsigned char)*s2));
+}
 
 void	init_format_info(t_format_info **format_info)
 {
@@ -19,6 +32,7 @@ void	init_format_info(t_format_info **format_info)
 	(**format_info).zero = 0;
 	(**format_info).precision= -1;
 	(**format_info).value = NULL;
+	(**format_info).c_null = 0;
 }
 
 char	*ft_fill_output_space(char *str, int len, t_format_info *format_info)
@@ -65,7 +79,8 @@ char	*ft_free_and_return_null_c(char *str)
 	if (!str)
 		return (NULL);
 	res = ft_substr(str, 0, 0);
-	free(str);
+	SAFE_FREE(str);
+	// free(str);
 	return (res);
 }
 
@@ -76,7 +91,8 @@ char	*ft_cut_by_precision(char *str, int len)
 	if (!str)
 		return (NULL);
 	res = ft_substr(str, 0, len);
-	free(str);
+	SAFE_FREE(str);
+	// free(str);
 	return (res);
 }
 
@@ -140,13 +156,20 @@ char	*ft_get_format(char *format, va_list *arg_list)
 	// str_i = 1;
 	while (ft_isflag(format[fmt_i]) || ft_isdigit(format[fmt_i]) || format[fmt_i] == '*')
 	{
+		// if (format[fmt_i] == '*')
+		// 	str = ft_strjoin_free_both(str, va_arg(*arg_list, char *));
 		if (format[fmt_i] == '*')
-			str = ft_strjoin_free_both(str, va_arg(*arg_list, char *));
-		// {
-		// 	tmp = va_arg(*arg_list, char *);
-		// 	while (*tmp)
-		// 		str[str_i++] = *tmp++;
-		// }
+		{
+			// void	*tmp;
+
+			// tmp = va_arg(*arg_list, void *);
+			// while (*tmp)
+			// {
+			// 	str = ft_strjoin_free_both(str, ft_ctoa(*tmp));
+			// 	tmp++;
+			// }
+			str = ft_strjoin_free_both(str, ft_itoa(va_arg(*arg_list, int)));
+		}
 		else
 			str = ft_strjoin_free_both(str, ft_ctoa(format[fmt_i]));
 			// str[str_i++] = format[fmt_i];
@@ -172,6 +195,7 @@ int	ft_isvalid_format(char *target)
 void		*ft_get_value(t_format_info *format_info, va_list *arg_list)
 {
 	char	*tmp;
+	unsigned int	c;
 
 	if (format_info->conversion_c == 'd' || format_info->conversion_c == 'i')
 		return (ft_itoa((long)va_arg(*arg_list, int)));
@@ -183,7 +207,14 @@ void		*ft_get_value(t_format_info *format_info, va_list *arg_list)
 		return (ft_xtoa((size_t)va_arg(*arg_list, void *), format_info));
 	else if (format_info->conversion_c == 'c')
 	{
-		tmp = ft_ctoa(va_arg(*arg_list, unsigned int));
+		c = va_arg(*arg_list, unsigned int);
+		if (c == 0)
+		{
+			tmp = ft_ctoa('1');
+			format_info->c_null = 1;
+		}
+		else
+			tmp = ft_ctoa(c);
 		if (!tmp)
 			return(NULL);
 		return (tmp);
@@ -287,7 +318,22 @@ void	ft_putstr(char *str)
 	write(1, str, ft_strlen(str));
 }
 
-int	ft_format(t_format_info *format_info)
+void	ft_putstr_n(char *str, int len)
+{
+	int	index;
+
+	index = 0;
+	while (index < len)
+	{
+		if (str[index] == '1')
+			ft_putchar('\0');
+		else
+			ft_putchar(str[index]);
+		index++;
+	}
+}
+
+int	ft_put_result(t_format_info *format_info)
 {
 	int		len;
 	char	*new_target;
@@ -299,13 +345,19 @@ int	ft_format(t_format_info *format_info)
 	if (format_info->min_width > ft_strlen(new_target))
 		new_target = ft_fill_output_space(new_target, format_info->min_width - ft_strlen(new_target), format_info);
 	len = ft_strlen(new_target);
-	ft_putstr(new_target);
-	new_target = NULL;
-	free(new_target);
-	format_info->value = NULL;
-	free(format_info->value);
-	format_info = NULL;
-	free(format_info);
+	if (format_info->c_null == 1)
+	{
+		ft_putstr_n(new_target, len);
+	}
+	else
+		ft_putstr(new_target);
+
+	// new_target = NULL;
+	SAFE_FREE(new_target);
+	// format_info->value = NULL;
+	SAFE_FREE(format_info->value);
+	// format_info = NULL;
+	SAFE_FREE(format_info);
 	return (len);
 }
 
@@ -342,7 +394,7 @@ int	ft_printf(const char *format, ...)
 				// target = ft_get_format((char *)format);
 				target = ft_get_format((char *)format, &arg_list);
 				if (ft_isvalid_format(target))
-					count += ft_format(ft_gen_format_info(target, &arg_list));
+					count += ft_put_result(ft_gen_format_info(target, &arg_list));
 				format += ft_strlen(target);
 				free(target);
 			// }
@@ -353,13 +405,17 @@ int	ft_printf(const char *format, ...)
 }
 
 
-// int	main(void)
-// {
-// 	// int	ret;
+int	main(void)
+{
+// 	int	ret;
 // 	// int a = 5;
+	// printf("[%*c]\n", 5, 'a');
+	// ft_printf("[%*s]\n", 32, "abc");
+	ft_printf("[%-5d]", 258);
 
-// 	printf("[%s]\n", "abc");
-// 	ft_printf("[%s]\n", "abc");
+// 	ret = ft_printf("%c\n", 0);
+// 	printf("%d\n", ret);
+// 	// ft_printf("%c", '\0');
 // 	// printf("[%5p]\n", NULL);
 // 	// ft_printf("[%5p]\n", NULL);
-// }
+}

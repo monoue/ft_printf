@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:07:49 by monoue            #+#    #+#             */
-/*   Updated: 2020/07/31 17:26:31 by monoue           ###   ########.fr       */
+/*   Updated: 2020/08/04 10:19:10 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,20 +51,6 @@ char	*ft_strdup(char *str)
 	return (res);
 }
 
-// char	*ft_strdup_c(char c)
-// {
-// 	char	*res;
-
-// 	if (!c)
-// 		return (NULL);
-// 	res = malloc(2);
-// 	if (!res)
-// 		return (NULL);
-// 	res[0] = c;
-// 	res[1] = '\0';
-// 	return (res);
-// }
-
 char	*ft_strjoin(char *s1, char *s2)
 {
 	int	s1_index;
@@ -95,10 +81,10 @@ char	*ft_strjoin_free_both(char *s1, char *s2)
 	char	*res;
 
 	res = ft_strjoin(s1, s2);
-	s1 = NULL;
-	free(s1);
-	s2 = NULL;
-	free(s2);
+	SAFE_FREE(s1);
+	// s2 = NULL;
+	// free(s2);
+	SAFE_FREE(s2);
 	return (res);
 }
 
@@ -129,39 +115,9 @@ char	*ft_substr(char *s, int start, int len)
 	return (p);
 }
 
-// char	*ft_substr(char	*str, int start, int len)
-// {
-// 	int	size;
-// 	int	index;
-// 	char	*res;
-
-// 	if (!str || start < 0 || len < 0)
-// 		return (NULL);
-// 	if (ft_strlen(str) <= start)
-// 		return (NULL);
-// 	size = (ft_strlen(str) < start + len) ? ft_strlen(str) - start : len;
-// 	res = malloc(size + 1);
-// 	if (!res)
-// 		return (NULL);
-// 	index = 0;
-// 	while (str[index + start] && index < len)
-// 	{
-// 		res[index] = str[index + start];
-// 		index++;
-// 	}
-// 	res[index] = '\0';
-// 	return (res);
-// }
-
-// char	*ft_ctoa(char c)
 char	*ft_ctoa(unsigned int c)
 {
 	char	*res;
-
-// ここから入れると１減る
-	// if (c == 0)
-	// 	return (NULL);
-// ここまで
 	res = ft_strdup("0");
 	if (!res)
 		return (NULL);
@@ -187,12 +143,6 @@ char	*ft_itoa(long num)
 		return (ft_ctoa((char)(num + '0')));
 }
 
-// char	*ft_ptoa(size_t num, t_format_info *format_info)
-// {
-// 	return(ft_strjoin_free_both(ft_strdup("0x"), ft_xtoa(num, format_info)));
-// }
-
-// char	*ft_xtoa(unsigned int num, t_format_info *format_info)
 char	*ft_xtoa(size_t num, t_format_info *format_info)
 {
 	if (num >= 16)

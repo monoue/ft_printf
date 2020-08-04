@@ -2,8 +2,12 @@
 
 int main()
 {
-	// printf("[%u]\n", "a"[0]);
-	printf("*\n", "abc")
+	printf("[%*c]", 5, 'a');
+	// printf("[%5c]\n", 'c');
+	// write(1, "\0", 1);
+	// printf("*\n", "abc")
+	// char	c = '\0';
+	// write(1, &c, 1);
 
 // 	printf("c: %c\n", 'Z');
 // 	ft_printf("c: %c\n", 'Z');
