@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 16:57:30 by monoue            #+#    #+#             */
-/*   Updated: 2020/08/04 15:59:31 by monoue           ###   ########.fr       */
+/*   Updated: 2020/08/04 16:39:05 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,6 +191,43 @@ int				ft_get_min_width_o_prec(char *target, int *index)
 	return (res);
 }
 
+void	ft_set_index_when_invalid_prec(char *target, int *index)
+{
+	(*index)++;
+	while (ft_isdigit(target[*index]))
+		(*index)++;
+}
+
+void			set_zero_minwidth_minus_prec(char *target, int *index, t_format_info *format_info)
+{
+	int res;
+
+	while (!ft_isconversion_c(target[*index]))
+	{
+		if (target[*index] == '0')
+			format_info->zero = 1;
+		if (ft_isdigit(target[*index]))
+			res = ft_get_min_width_o_prec(target, &(*index));
+		format_info->min_width = res;
+		if (target[*index] == '-')
+		{
+			format_info->minus = 1;
+			(*index)++;
+		}
+		if (target[*index] == '.')
+		{
+			(*index)++;
+			if (target[*index] == '-')
+				ft_set_index_when_invalid_prec(target, &(*index));
+			else
+			{
+				res = ft_get_min_width_o_prec(target, &(*index));
+				format_info->precision = res;
+			}
+		}
+	}
+}
+
 t_format_info	*ft_gen_format_info(char *target, va_list *arg_list)
 {
 	int				res;
@@ -204,49 +241,33 @@ t_format_info	*ft_gen_format_info(char *target, va_list *arg_list)
 	format_info->conversion_c = target[ft_strlen(target) - 1];
 	index = 1;
 	res = -1;
-	while (!ft_isconversion_c(target[index]))
-	{
-		if (target[index] == '0')
-			format_info->zero = 1;
-		if (ft_isdigit(target[index]))
-			res = ft_get_min_width_o_prec(target, &index);
+	if (!ft_isconversion_c(target[index]))
+		set_zero_minwidth_minus_prec(target, &index, format_info);
 
-
-		// while (ft_isdigit(target[index]))
-		// {
-		// 	if (res == -1)
-		// 		res = 0;
-		// 	res = res * 10 + CTOI(target[index]);
-		// 	index++;
-		// }
-		format_info->min_width = res;
-		if (target[index] == '-')
-		{
-			format_info->minus = 1;
-			index++;
-		}
-		if (target[index] == '.')
-		{
-			index++;
-			if (target[index] == '-')
-			{
-				index++;
-				while (ft_isdigit(target[index]))
-					index++;
-			}
-			else
-			{
-				res = ft_get_min_width_o_prec(target, &index);
-				// res = 0;
-				// while (ft_isdigit(target[index]))
-				// {
-				// 	res = res * 10 + CTOI(target[index]);
-				// 	index++;
-				// }
-				format_info->precision = res;
-			}
-		}
-	}
+	// while (!ft_isconversion_c(target[index]))
+	// {
+	// 	if (target[index] == '0')
+	// 		format_info->zero = 1;
+	// 	if (ft_isdigit(target[index]))
+	// 		res = ft_get_min_width_o_prec(target, &index);
+	// 	format_info->min_width = res;
+	// 	if (target[index] == '-')
+	// 	{
+	// 		format_info->minus = 1;
+	// 		index++;
+	// 	}
+	// 	if (target[index] == '.')
+	// 	{
+	// 		index++;
+	// 		if (target[index] == '-')
+	// 			ft_set_index_when_invalid_prec(target, &index);
+	// 		else
+	// 		{
+	// 			res = ft_get_min_width_o_prec(target, &index);
+	// 			format_info->precision = res;
+	// 		}
+	// 	}
+	// }
 	format_info->value = ft_get_value(format_info, arg_list);
 	return (format_info);
 }
@@ -322,23 +343,8 @@ int				ft_printf(const char *format, ...)
 	return (count);
 }
 
-// int	main(void)
-// {
-// 	int	ret;
-// 	// int a = 5;
-	// printf("[%*c]\n", 5, 'a');
-	// ft_printf("[%*s]\n", 32, "abc");
-	// ft_printf("[%-5d]", 258);
-	// printf("[%.*s]\n", -1, "hello");
-	// printf("[%-.1s]\n", "hello");
-	// printf("[%.*s]\n", -3, "hello");
-	// ft_printf("[%.*s]\n", -3, "hello");
-	// printf("[%.-3s]\n", "hello");
-	// ft_printf("[%.-3s]\n", "hello");
-
-// 	ret = ft_printf("%c\n", 0);
-// 	printf("%d\n", ret);
-// 	// ft_printf("%c", '\0');
-// 	// printf("[%5p]\n", NULL);
-// 	// ft_printf("[%5p]\n", NULL);
-// }
+int	main(void)
+{
+	// このケースでデバッグするところから！
+	ft_printf("[%.7s]\n", "hello");
+}
