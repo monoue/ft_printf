@@ -9,7 +9,7 @@ typedef struct	s_format_info
 {
 	int		min_width;
 	int		precision;
-	char	conversion_c;
+	char	conv_c;
 }				t_format_info;
 
 int	ft_strlen(char *str)
@@ -31,7 +31,7 @@ void	init_format_info(t_format_info *format_info)
 {
 	format_info->min_width = 0;
 	format_info->precision = -1;
-	format_info->conversion_c = '`\0';
+	format_info->conv_c = '`\0';
 }
 
 void	parse_min_width(const char **format, t_format_info *format_info)
@@ -60,7 +60,7 @@ void	parse_precision(const char **format, t_format_info *format_info)
 
 void	parse_conversion_c(const char **format, t_format_info *format_info)
 {
-	format_info->conversion_c = **format;
+	format_info->conv_c = **format;
 	if (**format)
 		(*format)++;
 }
@@ -84,7 +84,7 @@ int	display_s(char *str, t_format_info *format_info)
 
 int	display_arg(t_format_info *format_info, va_list *args)
 {
-	if (format_info->conversion_c == 's')
+	if (format_info->conv_c == 's')
 		return (display_s(va_arg(*args, char *), format_info));
 		// ここで引数の２番目以降を取ってくる
 	// if (format_info->conversion_c == 'd')

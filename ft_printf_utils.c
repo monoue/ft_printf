@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 17:07:49 by monoue            #+#    #+#             */
-/*   Updated: 2020/08/04 14:23:00 by monoue           ###   ########.fr       */
+/*   Updated: 2020/08/06 08:36:59 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,7 +196,7 @@ char	*ft_xtoa(size_t num, t_format_info *format_info)
 {
 	if (num >= 16)
 		return (ft_strjoin_free_both(ft_xtoa(num / 16, format_info), ft_xtoa(num % 16, format_info)));
-	else if (format_info->conversion_c == 'X')
+	else if (format_info->conv_c == 'X')
 		return (ft_ctoa("0123456789ABCDEF"[num]));
 	else
 		return (ft_ctoa("0123456789abcdef"[num]));

@@ -6,41 +6,40 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/28 16:57:30 by monoue            #+#    #+#             */
-/*   Updated: 2020/08/04 16:39:05 by monoue           ###   ########.fr       */
+/*   Updated: 2020/08/06 08:44:58 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-
-void			init_format_info(t_format_info **format_info)
+void			init_format_info(t_format_info **info)
 {
-	(**format_info).min_width = -1;
-	(**format_info).minus = 0;
-	(**format_info).zero = 0;
-	(**format_info).precision= -1;
-	(**format_info).value = NULL;
-	(**format_info).c_null = 0;
+	(**info).min_width = -1;
+	(**info).minus = 0;
+	(**info).zero = 0;
+	(**info).precision= -1;
+	(**info).value = NULL;
+	(**info).c_null = 0;
 }
 
-char			*ft_fill_output_space(char *str, int len, t_format_info *format_info)
+char			*ft_fill_output_space(char *str, int len, t_format_info *info)
 {
 	if (len < 0)
 		return (str);
-	if (format_info->minus)
+	if (info->minus)
 		while (len--)
 			str = ft_strjoin_free_both(str, ft_ctoa(' '));
-	else if (format_info->zero && format_info->precision == -1 && str[0] && str[0] == '-')
+	else if (info->zero && info->precision == -1 && str[0] && str[0] == '-')
 	{
 		str[0] = '0';
 		while (len--)
 			str = ft_strjoin_free_both(ft_ctoa('0'), str);
 		str[0] = '-';
 	}
-	else if (format_info->precision != -1)
+	else if (info->precision != -1)
 		while (len--)
 			str = ft_strjoin_free_both(ft_ctoa(' '), str);
-	else if (format_info->zero)
+	else if (info->zero)
 		while (len--)
 			str = ft_strjoin_free_both(ft_ctoa('0'), str);
 	else
@@ -71,27 +70,31 @@ char			*ft_cut_by_precision(char *str, int len)
 	return (res);
 }
 
-char			*ft_fill_output(char *str, char c, int len, t_format_info *format_info)
+char			*ft_fill_output(char *str, char c, int len, t_format_info *info)
 {
 	if (len < 0)
 		return (str);
-	if (format_info->minus)
+
+	if (info->minus && info->precision != -1)
 	{
-		if (format_info->precision != -1)
+		while (len)
 		{
-			while (len--)
-				str = ft_strjoin_free_both(ft_ctoa(c), str);
-		}
-		else
-		{
-			while (len--)
-				str = ft_strjoin_free_both(str, ft_ctoa(c));
+			str = ft_strjoin_free_both(ft_ctoa(c), str);
+			len--;
 		}
 	}
-	else
+	else if (info->minus)
 	{
-		while (len--)
-			str = ft_strjoin_free_both(ft_ctoa(c), str);
+		while (len)
+		{
+			str = ft_strjoin_free_both(str, ft_ctoa(c));
+			len--;
+		}
+	}
+	while (len)
+	{
+		str = ft_strjoin_free_both(ft_ctoa(c), str);
+		len--;
 	}
 	return (str);
 }
@@ -134,51 +137,53 @@ int				ft_isvalid_format(char *target)
 	return (ft_isconversion_c(target[ft_strlen(target) - 1]));
 }
 
-void			*ft_get_value(t_format_info *format_info, va_list *arg_list)
+char			*return_ctoa_and_check_null_c(t_format_info *format_info,
+va_list *arg_list)
 {
-	char	*tmp;
+	char			*tmp;
 	unsigned int	c;
 
-	if (format_info->conversion_c == 'd' || format_info->conversion_c == 'i')
+	c = va_arg(*arg_list, unsigned int);
+	if (c == 0)
+	{
+		tmp = ft_ctoa('1');
+		format_info->c_null = 1;
+	}
+	else
+		tmp = ft_ctoa(c);
+	return (tmp);
+}
+
+char			*ft_string_arg_to_a(va_list *arg_list)
+{
+	char	*tmp;
+
+	tmp = ft_strdup(va_arg(*arg_list, char *));
+	if (!tmp)
+		tmp = ft_strdup("(null)");
+	return (tmp);
+}
+
+void			*ft_get_value(t_format_info *info, va_list *arg_list)
+{
+	if (info->conv_c == 'd' || info->conv_c == 'i')
 		return (ft_itoa((long)va_arg(*arg_list, int)));
-	else if (format_info->conversion_c == 'u')
+	else if (info->conv_c == 'u')
 		return (ft_utoa(va_arg(*arg_list, unsigned int)));
-	else if (format_info->conversion_c == 'x' || format_info->conversion_c == 'X')
-		return (ft_xtoa((size_t)va_arg(*arg_list, unsigned int), format_info));
-	else if (format_info->conversion_c == 'p')
-		return (ft_xtoa((size_t)va_arg(*arg_list, void *), format_info));
-	else if (format_info->conversion_c == 'c')
-	{
-		c = va_arg(*arg_list, unsigned int);
-		if (c == 0)
-		{
-			tmp = ft_ctoa('1');
-			format_info->c_null = 1;
-		}
-		else
-			tmp = ft_ctoa(c);
-		if (!tmp)
-			return(NULL);
-		return (tmp);
-	}
-	else if (format_info->conversion_c == '%')
-	{
-		tmp = ft_ctoa('%');
-		if (!tmp)
-			return(NULL);
-		return (tmp);
-	}
-	else if (format_info->conversion_c == 's')
-	{
-		tmp = ft_strdup(va_arg(*arg_list, char *));
-		if (!tmp)
-			tmp = ft_strdup("(null)");
-		return (tmp);
-	}
+	else if (info->conv_c == 'x' || info->conv_c == 'X')
+		return (ft_xtoa((size_t)va_arg(*arg_list, unsigned int), info));
+	else if (info->conv_c == 'p')
+		return (ft_xtoa((size_t)va_arg(*arg_list, void *), info));
+	else if (info->conv_c == 'c')
+		return (return_ctoa_and_check_null_c(info, arg_list));
+	else if (info->conv_c == '%')
+		return (ft_ctoa('%'));
+	else if (info->conv_c == 's')
+		return (ft_string_arg_to_a(arg_list));
 	return (NULL);
 }
 
-int				ft_get_min_width_o_prec(char *target, int *index)
+int				minwidth_o_prec_to_int(char *target, int *index)
 {
 	int	res;
 
@@ -191,131 +196,108 @@ int				ft_get_min_width_o_prec(char *target, int *index)
 	return (res);
 }
 
-void	ft_set_index_when_invalid_prec(char *target, int *index)
+void			ft_set_index_when_invalid_prec(char *target, int *index)
 {
 	(*index)++;
 	while (ft_isdigit(target[*index]))
 		(*index)++;
 }
 
-void			set_zero_minwidth_minus_prec(char *target, int *index, t_format_info *format_info)
+void			set_minus_increment_index(int *index, t_format_info *info)
 {
-	int res;
+	info->minus = 1;
+	(*index)++;
+}
 
-	while (!ft_isconversion_c(target[*index]))
+void			set_zero_minwidth_minus_prec(char *target, int *index,
+t_format_info *info)
+{
+	if (target[*index] == '0')
+		info->zero = 1;
+	if (ft_isdigit(target[*index]))
+		info->min_width = minwidth_o_prec_to_int(target, &(*index));
+	if (target[*index] == '-')
+		set_minus_increment_index(&(*index), info);
+	if (target[*index] == '.')
 	{
-		if (target[*index] == '0')
-			format_info->zero = 1;
-		if (ft_isdigit(target[*index]))
-			res = ft_get_min_width_o_prec(target, &(*index));
-		format_info->min_width = res;
+		(*index)++;
 		if (target[*index] == '-')
-		{
-			format_info->minus = 1;
-			(*index)++;
-		}
-		if (target[*index] == '.')
-		{
-			(*index)++;
-			if (target[*index] == '-')
-				ft_set_index_when_invalid_prec(target, &(*index));
-			else
-			{
-				res = ft_get_min_width_o_prec(target, &(*index));
-				format_info->precision = res;
-			}
-		}
+			ft_set_index_when_invalid_prec(target, &(*index));
+		else
+			info->precision = minwidth_o_prec_to_int(target, &(*index));
 	}
 }
 
 t_format_info	*ft_gen_format_info(char *target, va_list *arg_list)
 {
-	int				res;
 	int				index;
-	t_format_info	*format_info;
+	t_format_info	*info;
 
-	format_info = malloc(sizeof(t_format_info) * 1);
-	if (!format_info)
+	info = malloc(sizeof(t_format_info) * 1);
+	if (!info)
 		return (NULL);
-	init_format_info(&format_info);
-	format_info->conversion_c = target[ft_strlen(target) - 1];
+	init_format_info(&info);
+	info->conv_c = target[ft_strlen(target) - 1];
 	index = 1;
-	res = -1;
-	if (!ft_isconversion_c(target[index]))
-		set_zero_minwidth_minus_prec(target, &index, format_info);
-
-	// while (!ft_isconversion_c(target[index]))
-	// {
-	// 	if (target[index] == '0')
-	// 		format_info->zero = 1;
-	// 	if (ft_isdigit(target[index]))
-	// 		res = ft_get_min_width_o_prec(target, &index);
-	// 	format_info->min_width = res;
-	// 	if (target[index] == '-')
-	// 	{
-	// 		format_info->minus = 1;
-	// 		index++;
-	// 	}
-	// 	if (target[index] == '.')
-	// 	{
-	// 		index++;
-	// 		if (target[index] == '-')
-	// 			ft_set_index_when_invalid_prec(target, &index);
-	// 		else
-	// 		{
-	// 			res = ft_get_min_width_o_prec(target, &index);
-	// 			format_info->precision = res;
-	// 		}
-	// 	}
-	// }
-	format_info->value = ft_get_value(format_info, arg_list);
-	return (format_info);
+	while (!ft_isconversion_c(target[index]))
+		set_zero_minwidth_minus_prec(target, &index, info);
+	info->value = ft_get_value(info, arg_list);
+	return (info);
 }
 
-char			*ft_apply_precision(char *new_target, t_format_info *format_info)
+char			*ft_apply_precision(char *new_target, t_format_info *info)
 {
-	if (format_info->precision == -1)
+	if (info->precision == -1)
 		return (new_target);
-	if ((format_info->conversion_c == 'd' || format_info->conversion_c == 'i' || format_info->conversion_c == 'u' ||format_info->conversion_c == 'x' || format_info->conversion_c == 'X' || format_info->conversion_c == 'p') && format_info->precision == 0 && new_target[0] == '0')
+	if ((info->conv_c == 'd' || info->conv_c == 'i' || info->conv_c == 'u'
+	||info->conv_c == 'x' || info->conv_c == 'X' || info->conv_c == 'p')
+	&& info->precision == 0 && new_target[0] == '0')
 		return (ft_free_and_return_null_c(new_target));
-	if (format_info->conversion_c == 'd' || format_info->conversion_c == 'i' || format_info->conversion_c == 'u' || format_info->conversion_c == 'p')
+	if (info->conv_c == 'd' || info->conv_c == 'i' || info->conv_c == 'u'
+	|| info->conv_c == 'p')
 	{
-		if (new_target[0] == '-' && ft_strlen(new_target) <= format_info->precision)
+		if (new_target[0] == '-' && ft_strlen(new_target) <= info->precision)
 		{
 			new_target[0] = '0';
-			new_target = ft_fill_output_zero(new_target, format_info->precision - ft_strlen(new_target) + 1);
+			new_target = ft_fill_output_zero(new_target,
+			info->precision - ft_strlen(new_target) + 1);
 			new_target[0] = '-';
 		}
-		else if (ft_strlen(new_target) < format_info->precision)
-			new_target = ft_fill_output_zero(new_target, format_info->precision - ft_strlen(new_target));
+		else if (ft_strlen(new_target) < info->precision)
+			new_target = ft_fill_output_zero(new_target,
+			info->precision - ft_strlen(new_target));
 		return (new_target);
 	}
-	if ((format_info->conversion_c == 'x' || format_info->conversion_c == 'X') && ft_strlen(new_target) < format_info->precision)
-		return (ft_fill_output(new_target, '0', format_info->precision - ft_strlen(new_target), format_info));
-	if ((format_info->conversion_c == 'c' || format_info->conversion_c == 's') && ft_strlen(new_target) > format_info->precision)
-		return (ft_cut_by_precision(new_target, format_info->precision));
+	if ((info->conv_c == 'x' || info->conv_c == 'X')
+	&& ft_strlen(new_target) < info->precision)
+		return (ft_fill_output(new_target, '0',
+		info->precision - ft_strlen(new_target), info));
+	if ((info->conv_c == 'c' || info->conv_c == 's')
+	&& ft_strlen(new_target) > info->precision)
+		return (ft_cut_by_precision(new_target, info->precision));
 	return (new_target);
 }
 
-int				ft_put_result(t_format_info *format_info)
+int				ft_put_result(t_format_info *info)
 {
 	int		len;
 	char	*new_target;
 
-	new_target = ft_strdup(format_info->value);
-	new_target = ft_apply_precision(new_target, format_info);
-	if (format_info->conversion_c == 'p')
+	new_target = ft_strdup(info->value);
+	new_target = ft_apply_precision(new_target, info);
+	if (info->conv_c == 'p')
 		new_target = ft_strjoin_free_both(ft_strdup("0x"), new_target);
-	if (format_info->min_width > ft_strlen(new_target))
-		new_target = ft_fill_output_space(new_target, format_info->min_width - ft_strlen(new_target), format_info);
+	if (info->min_width > ft_strlen(new_target))
+		new_target = ft_fill_output_space(new_target,
+		info->min_width - ft_strlen(new_target), info);
 	len = ft_strlen(new_target);
-	if (format_info->c_null == 1)
+	if (info->c_null == 1)
 		ft_putstr_n(new_target, len);
 	else
 		ft_putstr(new_target);
 	SAFE_FREE(new_target);
-	SAFE_FREE(format_info->value);
-	SAFE_FREE(format_info);
+	SAFE_FREE(info->value);
+	SAFE_FREE(info);
 	return (len);
 }
 
@@ -343,8 +325,8 @@ int				ft_printf(const char *format, ...)
 	return (count);
 }
 
-int	main(void)
-{
-	// このケースでデバッグするところから！
-	ft_printf("[%.7s]\n", "hello");
-}
+// int	main(void)
+// {
+// 	// このケースでデバッグするところから！
+// 	ft_printf("[%.7s]\n", "hello");
+// }

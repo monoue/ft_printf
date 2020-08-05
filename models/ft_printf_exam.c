@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/24 15:10:06 by monoue            #+#    #+#             */
-/*   Updated: 2020/07/28 16:21:04 by monoue           ###   ########.fr       */
+/*   Updated: 2020/08/06 08:36:59 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	ft_ctoi(char c)
 
 typedef	struct	s_format_info
 {
-	char	conversion_c;
+	char	conv_c;
 	int		min_width;
 	int		precision;
 	void	*value;
@@ -265,10 +265,10 @@ t_format_info	*ft_gen_format_info(char *format_str, va_list *arg_list)
 	t_format_info	*format_info;
 
 	format_info = malloc(sizeof(t_format_info) * 1);
-	format_info->conversion_c = format_str[ft_strlen(format_str) - 1];
+	format_info->conv_c = format_str[ft_strlen(format_str) - 1];
 	format_info->min_width = ft_get_min_width(format_str);
 	format_info->precision = ft_get_precision(format_str);
-	format_info->value = ft_get_value(format_info->conversion_c, arg_list);
+	format_info->value = ft_get_value(format_info->conv_c, arg_list);
 	return (format_info);
 }
 
@@ -333,7 +333,7 @@ int	ft_format(t_format_info *format_info)
 	char	*new_str;
 
 	new_str = ft_strdup(format_info->value);
-	new_str = ft_apply_precision(new_str, format_info->precision, format_info->conversion_c);
+	new_str = ft_apply_precision(new_str, format_info->precision, format_info->conv_c);
 	new_str = ft_apply_minwidth(new_str, format_info->min_width);
 	ft_putstr(new_str);
 	len = ft_strlen(new_str);

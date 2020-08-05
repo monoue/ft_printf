@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/02 11:56:31 by monoue            #+#    #+#             */
-/*   Updated: 2020/08/04 15:54:56 by monoue           ###   ########.fr       */
+/*   Updated: 2020/08/06 08:36:59 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ typedef struct	s_format_info
 {
 	int		min_width;
 	int		precision;
-	char	conversion_c;
+	char	conv_c;
 	int		minus;
 	int		zero;
 	void	*value;
