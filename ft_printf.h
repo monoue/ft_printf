@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/02 11:56:31 by monoue            #+#    #+#             */
-/*   Updated: 2020/09/21 11:57:35 by monoue           ###   ########.fr       */
+/*   Updated: 2020/09/21 15:57:10 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <stdarg.h>
 # include <limits.h>
 # include <stdbool.h>
+# include "libft/libft.h"
 
 # define MIN(x, y)		x <= y ? x : y
 # define CTOI(c)		c - '0'
@@ -63,18 +64,18 @@ bool			isconversion_c(const unsigned int c);
 /*
 ** ft_printf_utils.c
 */
-void			ft_putchar(char c);
-void			ft_putstr(char *str);
-size_t			ft_strlen(const char *str);
-char			*ft_strchr(const char *s, int c);
-bool			ft_isdigit(const unsigned int c);
+// void			ft_putchar(char c);
+// void			ft_putstr(char *str);
+// size_t			ft_strlen(const char *str);
+// char			*ft_strchr(const char *s, int c);
+// bool			ft_isdigit(const int c);
 
 /*
 ** ft_printf_utils2.c
 */
-char			*ft_strdup(const char *original_s);
-char			*ft_strjoin_free_both(char *s1, char *s2);
-char			*ft_substr(char *original_s, int start, int len);
+// char			*ft_strdup(const char *original_s);
+// char			*ft_strjoin_free_both(char *s1, char *s2);
+// char			*ft_substr(char *original_s, int start, int len);
 
 /*
 ** toa_malloc.c

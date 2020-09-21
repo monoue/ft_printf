@@ -6,8 +6,6 @@ CLIBS	= -L . -lft
 CFLAGS	= -Wall -Wextra -Werror
 
 SRCS += ft_printf.c
-SRCS += ft_printf_utils.c
-SRCS += ft_printf_utils2.c
 SRCS += cut_out_format.c
 SRCS += init_format_info.c
 SRCS += is.c
@@ -17,10 +15,12 @@ SRCS += toa_malloc.c
 SRCS += apply_margin.c
 SRCS += fill_with_zero.c
 
-all: $(NAME)
-
 $(NAME): $(OBJS)
-	ar rc $(NAME) $(OBJS)
+	$(MAKE) -C ./libft
+	cp libft/libft.a $(NAME)
+	ar rcs $(NAME) $(OBJS)
+
+all: $(NAME)
 
 clean:
 	rm -f $(OBJS) $(BOBJS)
