@@ -217,11 +217,6 @@ int		main(void)
 	b = ft_printf("[%-5.4d]\n",-123);
 	printf("%d, %d\n", a, b);
 
-	printf("---[%%*9.3s LYDI]---\n");
-	a = printf("[%*9.3s]\n", -5, "LYDI");
-	b = ft_printf("[%*9.3s]\n", -5, "LYDI");
-	printf("a=%d b=%d\n", a, b);
-
 	printf("---[%%12.2.9.3-5s]---\n");
 	a = printf("[%12.2.9.3-05s]\n", "42tokyo");
 	b = ft_printf("[%12.2.9.3-05s]\n", "42tokyo");
@@ -237,6 +232,6 @@ int		main(void)
 	b = printf("[%.10.20d]\n", -42);
 	printf("%d %d\n\n", a, b);
 
-	// while (1);
+	/* while (1); */
 	return (0);
 }
