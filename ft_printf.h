@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/02 11:56:31 by monoue            #+#    #+#             */
-/*   Updated: 2020/09/21 15:57:10 by monoue           ###   ########.fr       */
+/*   Updated: 2021/01/20 14:50:02 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@
 # include <stdbool.h>
 # include "libft/libft.h"
 
-# define MIN(x, y)		x <= y ? x : y
 # define CTOI(c)		c - '0'
 # define NOT_SET		-1
 # define SAFE_FREE(ptr)	{free(ptr);ptr = NULL;}
