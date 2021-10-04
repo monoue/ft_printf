@@ -4,3 +4,5 @@ ft_printf
 *.dSYM
 libftprintf.a
 pft_2019/
+.vscode
+.idea

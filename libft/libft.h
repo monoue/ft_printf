@@ -6,7 +6,7 @@
 /*   By: monoue <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/02 11:56:31 by monoue            #+#    #+#             */
-/*   Updated: 2021/01/20 14:54:22 by monoue           ###   ########.fr       */
+/*   Updated: 2021/10/04 15:47:18 by monoue           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 # include <stdbool.h>
 
 # include "get_next_line.h"
-# include "./ft_printf/ft_printf.h"
+# include "../ft_printf.h"
 
 # define INT_MIN_STR "-2147483648"
 # define MIN(x, y)		((x) <= (y) ? (x) : (y))
