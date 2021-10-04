@@ -37,7 +37,7 @@ ft_printf("%.*d minutes.\n", 10, 525600);
 
 ### Installation
 ```bash
-git clone https://github.com/unstoppa61e/printf.git
+git clone https://github.com/unstoppa61e/ft_printf.git
 ```
 
 ## Usage
